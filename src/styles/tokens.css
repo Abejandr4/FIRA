@@ -16,6 +16,19 @@
   --teal-dark: #28564f;
   --danger: #d9766a;
   --radius: 7px;
+  /* Escala tipográfica. Figma Make la dejó entre 7 y 10 px; se subió para legibilidad.
+     Para agrandar o achicar TODO el dashboard, cambia estos valores. (Original de Figma entre paréntesis.) */
+  --fs-micro: 11px;   /* (7)  notas mínimas, nombres de columna */
+  --fs-xs: 12px;      /* (8)  etiquetas, leyendas, captions */
+  --fs-sm: 13px;      /* (9)  texto secundario */
+  --fs-base: 14px;    /* (10) texto de cuerpo en tarjetas */
+  --fs-md: 15px;      /* (11) encabezados de sección */
+  --fs-lg: 16px;      /* (12–13) */
+  --fs-xl: 17px;      /* (14) */
+  --fs-2xl: 19px;     /* (15–16) títulos de tarjeta */
+  --fs-3xl: 21px;     /* (17–20) valores de métricas */
+  --fs-4xl: 27px;     /* (22–24) títulos de página */
+  --fs-hero: 40px;    /* (35) rendimiento estimado */
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   font-variant-numeric: tabular-nums;
   background: var(--bg);
