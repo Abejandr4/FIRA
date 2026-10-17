@@ -37,7 +37,7 @@ export function VistaResultados({ escenario, todas, fila, sensibilidad }: {
   return (
     <>
       <div className="data-heading">
-        <div><Label>{conBase ? "ESCENARIO CON FECHA INGRESADA" : "ESCENARIO BASE"}</Label><div className="page-title">Datos biofísicos</div></div>
+        <div><Label>{conBase ? "ESCENARIO CON FECHA INGRESADA" : "ESCENARIO BASE"}</Label><div className="page-title">Variables biofísicas simuladas</div></div>
         <span className="neutral-badge"><Icon name="calendar" size={15} /> {conBase ? "Fecha de siembra ingresada" : "Fecha estimada con satélite"}</span>
       </div>
       {GRUPOS.map((g, gi) => (

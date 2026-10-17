@@ -84,7 +84,7 @@ function Simulador({ ruta, navegar, parcela, todas, fila, params, entrada, sensi
           )}
         </div>
         <div className="key-dates">
-          {([["Siembra", activo.fecha_siembra], ["Floración", activo.fecha_antesis], ["Madurez", activo.fecha_madurez]] as const).map(([n, f]) => (
+          {([["Siembra", activo.fecha_siembra], ["Antesis", activo.fecha_antesis], ["Madurez", activo.fecha_madurez]] as const).map(([n, f]) => (
             <div key={n}><span>{n}</span><b>{fecha(f)}</b><small className={esc.origen === "ingresada" ? "origen-ingresada" : ""}>{origenTxt}</small></div>
           ))}
         </div>
@@ -94,7 +94,7 @@ function Simulador({ ruta, navegar, parcela, todas, fila, params, entrada, sensi
       </header>
       <main className="sim-body">
         <aside className="plant-column">
-          <div><Label>CEBADA DE ESTA PARCELA</Label><div className="plant-title">{pestana === "resultados" ? "Estado final" : "Crecimiento simulado"}</div></div>
+          <div><Label>REPRESENTACIÓN DEL CULTIVO</Label><div className="plant-title">{pestana === "resultados" ? "Estado a madurez" : "Desarrollo simulado"}</div></div>
           <Planta estado={estadoPlanta} etiqueta={etiquetaPlanta} reproduciendo={reproduciendo} />
           {pestana === "explorador" && (
             <LineaTiempo resultado={activo} entrada={entrada} dia={t} setDia={setDia} reproduciendo={reproduciendo}
@@ -105,7 +105,7 @@ function Simulador({ ruta, navegar, parcela, todas, fila, params, entrada, sensi
         <section className="data-column">
           {pestana === "resultados"
             ? <VistaResultados escenario={esc} todas={todas} fila={fila} sensibilidad={sensibilidad} />
-            : <VistaExplorador escenario={esc} fila={fila} />}
+            : <VistaExplorador escenario={esc} fila={fila} entrada={entrada} params={params} />}
         </section>
       </main>
     </div>

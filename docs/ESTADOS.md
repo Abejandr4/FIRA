@@ -29,6 +29,7 @@ Cada regla vive en un solo lugar del código; cambiar el valor ahí la cambia en
 | Niveles de KS | ≥ 0.95 poco estrés · ≥ 0.80 moderado · < 0.80 alto | `simulador/resultados/lecturas.ts` → `CORTES_KS` |
 | Lectura de fenología | percentil de `DAP_antesis_est` < 25 temprana · > 75 tardía | `lecturas.ts` |
 | Lectura de luz | percentil de `fPAR_integrado` < 25 bajo · > 75 alto | `lecturas.ts` |
+| Ciclo de la variedad (escenarios) | precoz −10 % · tardía +10 % de los grados-día objetivo | `simulador/escenarios/escenario.ts` → `FACTOR_VARIEDAD` |
 | Aviso NDVI | inicio de crecimiento observado > 45 días después de la siembra ingresada | `simulador/useEscenario.ts` → `UMBRAL_DIAS_AVISO_NDVI` |
 | Percentiles en Dx | no mostrar si el municipio tiene < 10 parcelas | `parcela/PanelDx` (pendiente) |
 | "Cerca de la media municipal" | por definir | `parcela/PanelRendimiento` (pendiente) |

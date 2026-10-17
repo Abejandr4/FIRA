@@ -1,22 +1,25 @@
 /** Vista B del simulador: retroalimentación con la fecha de siembra real y "¿Y si…?" (deshabilitado). */
 import { Button, Icon, Label, SegmentedControl } from "../../../components/ui";
-import type { VariablesSimulador } from "../../../data/tipos";
+import type { EntradaDiaria, ParamsSimulador, VariablesSimulador } from "../../../data/tipos";
+import { EscenariosHipoteticos } from "../escenarios/EscenariosHipoteticos";
 import { dias, fecha, num, pct } from "../../../lib/formato";
 import { diferenciaDias } from "../motor";
 import { TODAS } from "../resultados/metricas";
 import type { Escenario } from "../useEscenario";
 
-export function VistaExplorador({ escenario: e, fila }: { escenario: Escenario; fila: VariablesSimulador }) {
+export function VistaExplorador({ escenario: e, fila, entrada, params }: {
+  escenario: Escenario; fila: VariablesSimulador; entrada: EntradaDiaria; params: ParamsSimulador;
+}) {
   const ingresada = e.origen === "ingresada";
   const dAnt = diferenciaDias(e.activo.fecha_antesis, e.base.fecha_antesis);
   const dMad = diferenciaDias(e.activo.fecha_madurez, e.base.fecha_madurez);
 
   return (
     <>
-      <div className="data-heading"><div><Label>EXPLORADOR TEMPORAL</Label><div className="page-title">Retroalimentación: así va el cultivo</div></div></div>
+      <div className="data-heading"><div><Label>EXPLORADOR</Label><div className="page-title">Ajuste con la fecha de siembra observada</div></div></div>
       <div className="feedback-card">
         <div className="field-heading">
-          <div><strong id="siembra-real">Fecha de siembra real</strong><span>Opcional</span></div>
+          <div><strong id="siembra-real">Fecha de siembra observada</strong><span>Opcional</span></div>
           <p>Por defecto: Estimada con satélite · {fecha(fila.fecha_siembra)}</p>
         </div>
         <label className={`date-input ${e.errorFecha ? "date-input--error" : ""}`}>
@@ -43,12 +46,12 @@ export function VistaExplorador({ escenario: e, fila }: { escenario: Escenario; 
             El NDVI de esta parcela no muestra crecimiento hasta {fecha(e.avisoNdvi)}. Puede deberse a siembra en seco o a una fecha aproximada.</div>
         )}
         <div className="updated-dates">
-          <div><span>{ingresada ? "Floración actualizada" : "Floración · escenario base"}</span><b>{fecha(e.activo.fecha_antesis)}</b><small>{ingresada ? dias(dAnt) : "Estimada con satélite"}</small></div>
+          <div><span>{ingresada ? "Antesis actualizada" : "Antesis · escenario base"}</span><b>{fecha(e.activo.fecha_antesis)}</b><small>{ingresada ? dias(dAnt) : "Estimada con satélite"}</small></div>
           <div><span>{ingresada ? "Madurez actualizada" : "Madurez · escenario base"}</span><b>{fecha(e.activo.fecha_madurez)}</b><small>{ingresada ? dias(dMad) : "Estimada con satélite"}</small></div>
         </div>
         {ingresada && (
           <details className="variaciones" open>
-            <summary>Cambio de las variables frente al escenario base</summary>
+            <summary>Variación de las variables frente al escenario base</summary>
             <ul>
               {TODAS.map((m) => {
                 const b = e.base.variables[m.columna], a = e.activo.variables[m.columna];
@@ -61,12 +64,7 @@ export function VistaExplorador({ escenario: e, fila }: { escenario: Escenario; 
         <Button variant="secondary" onClick={e.restablecer} disabled={!e.fechaIngresada}><Icon name="reset" size={16} /> Restablecer a estimada</Button>
         <div className="fixed-note"><Icon name="info" />La predicción de rendimiento del modelo no cambia con esta fecha. El fPAR sigue siendo el observado por el satélite.</div>
       </div>
-      <div className="coming-soon" aria-disabled="true">
-        <div><Label>PRÓXIMAMENTE</Label><div className="card-title">¿Y si…?</div></div>
-        <p>Fecha de siembra hipotética · periodo seco · lluvia del ciclo · riego de auxilio · ciclo de la variedad</p>
-        <div className="disabled-controls"><span /><span /><span /></div>
-        <small>Requiere reproyectar el fPAR; aún no disponible.</small>
-      </div>
+      <EscenariosHipoteticos key={e.activo.fecha_siembra} entrada={entrada} params={params} fila={fila} base={e.activo} />
     </>
   );
 }

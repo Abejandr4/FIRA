@@ -55,7 +55,8 @@ src/
     asistente/                chat
     simulador/
       resultados/             12 tarjetas, lecturas, sensibilidad, advertencias
-      explorador/             fecha de siembra real, línea de tiempo, "¿Y si…?"
+      explorador/             fecha de siembra observada, línea de tiempo
+      escenarios/             escenarios hipotéticos (lluvia, periodo seco, riego, variedad, siembra)
       planta/                 planta 3D (Three.js) + esquema 2D, con un contrato propio
       motor/                  M2–M4 + 12 variables en TypeScript (port del simulador)
       useEscenario.ts         escenario base vs. fecha ingresada
@@ -77,6 +78,7 @@ Ver [CONTRIBUTING.md](CONTRIBUTING.md): quién es responsable de cada carpeta, r
 | --- | --- |
 | Simulador · Resultados | Conectado a datos reales |
 | Simulador · Explorador | Conectado; recalcula en el navegador con el motor TS |
+| Simulador · Escenarios hipotéticos | Conectado; precipitación, periodo sin lluvia, riego, ciclo de variedad y fecha de siembra |
 | Planta | 3D migrada; esquema 2D como respaldo sin WebGL |
 | Parcela · ¿qué pasaría si…? | Conectado; recalcula la predicción en vivo con los coeficientes del ridge |
 | Parcela | Identificación, confianza y financiero conectados; resto con relleno `XX,X` y `TODO(parcela)` |

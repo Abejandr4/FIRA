@@ -38,7 +38,7 @@ export interface AtributosPlanta {
 export const ETIQUETA_ETAPA: Record<Estadio, string> = {
   pre_siembra: "Suelo desnudo · antes de sembrar",
   vegetativo: "Vegetativa",
-  antesis: "Floración",
+  antesis: "Antesis",
   llenado: "Llenado de grano",
   madurez: "Madurez",
 };

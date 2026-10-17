@@ -31,7 +31,7 @@ export function GraficoSensibilidad({ filas }: { filas: FilaSensibilidad[] }) {
   const max = Math.max(...datos.map((d) => d.magnitud), 1);
   return (
     <section className="sensitivity" aria-labelledby="sens-titulo">
-      <div className="group-heading"><div><span>04</span><strong id="sens-titulo">Sensibilidad</strong><em>¿qué supuesto pesa más?</em></div>
+      <div className="group-heading"><div><span>04</span><strong id="sens-titulo">Análisis de sensibilidad</strong><em>influencia de cada supuesto</em></div>
         <p>Cambio mediano por parcela al mover un supuesto a la vez (197 parcelas).</p></div>
       <div className="sens-head" aria-hidden="true"><span>Supuesto</span><span>Mayor cambio mediano</span><span>ρ mínimo</span></div>
       <ul className="sens-list">
