@@ -1,13 +1,461 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>animacioncebada</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.js"></script>
-  </body>
+<!DOCTYPE html>
+<!--
+  =====================================================================
+  AgroCebada FIRA 2026 · Módulo AnimacionCebada · PASO 1
+  Escena 3D base del Gemelo Digital de cebada (Hordeum vulgare)
+  ---------------------------------------------------------------------
+  - Three.js r160 vía importmap (unpkg), sin compilar ni instalar nada.
+  - Compatible con Live Server (extensión de VS Code).
+  - Estructura modular: plantaGroup { suelo, tallo, hojas, espiga }
+  - Expone plantNodes y actualizarNodos3D(atributos) para que el futuro
+    archivo src/biophysics.js pueda manipular la planta.
+  =====================================================================
+-->
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCebada FIRA 2026 · Gemelo Digital de Cebada</title>
+ 
+  <style>
+    /* Canvas a pantalla completa, sin barras de desplazamiento */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #dfeaf2;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    canvas { display: block; }
+ 
+    /* Panel de información y pruebas (provisional, solo para el Paso 1) */
+    #panel {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.88);
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+      font-size: 13px;
+      color: #2b3a2b;
+      max-width: 260px;
+      line-height: 1.35;
+    }
+    #panel h1 { margin: 0 0 4px; font-size: 15px; }
+    #panel small { color: #5b6b5b; }
+    #panel .botones { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+    #panel button {
+      border: 0;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: #4f7a2e;
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    #panel button:hover { background: #3d611f; }
+  </style>
+ 
+  <!-- Importmap: resuelve "three" y los addons (OrbitControls) desde CDN -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+ 
+<body>
+  <!-- Panel provisional para probar la reactividad de actualizarNodos3D() -->
+  <div id="panel">
+    <h1>🌾 Gemelo Digital · Cebada</h1>
+    <small>AgroCebada FIRA 2026 · Paso 1<br />Arrastra para orbitar, rueda para acercar.</small>
+    <div class="botones">
+      <button data-etapa="vegetativo">Vegetativo</button>
+      <button data-etapa="espigamiento">Espigamiento</button>
+      <button data-etapa="madurez">Madurez</button>
+      <button data-etapa="reset">Reiniciar</button>
+    </div>
+  </div>
+ 
+  <script type="module">
+    // ===================================================================
+    // 0. IMPORTACIONES
+    // ===================================================================
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+ 
+    // ===================================================================
+    // 1. CONSTANTES DE LA PLANTA (unidades arbitrarias ≈ metros)
+    // ===================================================================
+    const ALTURA_TALLO_BASE = 2.2;   // altura del tallo sin escalar
+    const RADIO_TALLO_BASE  = 0.045; // radio medio del tallo
+ 
+    // Colores iniciales (se pueden modificar luego con actualizarNodos3D)
+    const COLORES_INICIALES = {
+      suelo:  0x6b4a2b, // café tierra
+      tallo:  0x5a9a2f, // verde tallo
+      hojas:  0x4c9a2a, // verde hoja
+      espiga: 0xd8b13a  // dorado de grano
+    };
+ 
+    // ===================================================================
+    // 2. ESCENA, CÁMARA Y RENDERIZADOR
+    // ===================================================================
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xdfeaf2);          // cielo claro
+    scene.fog = new THREE.Fog(0xdfeaf2, 12, 30);           // bruma suave a distancia
+ 
+    // Cámara en perspectiva orientada hacia el centro de la planta
+    const camera = new THREE.PerspectiveCamera(
+      50,                                      // campo de visión vertical
+      window.innerWidth / window.innerHeight,  // relación de aspecto
+      0.1,                                     // plano cercano
+      100                                      // plano lejano
+    );
+    camera.position.set(3.2, 2.4, 4.2);
+    const OBJETIVO_CAMARA = new THREE.Vector3(0, 1.2, 0); // punto medio de la planta
+    camera.lookAt(OBJETIVO_CAMARA);
+ 
+    // Renderizador WebGL con sombras habilitadas
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // limita carga en pantallas HiDPI
+    renderer.shadowMap.enabled = true;                   // ← sombras activas
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;    // bordes suaves
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    document.body.appendChild(renderer.domElement);
+ 
+    // ===================================================================
+    // 3. CONTROLES ORBITALES
+    // ===================================================================
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;      // amortiguamiento suave
+    controls.dampingFactor = 0.07;
+    controls.target.copy(OBJETIVO_CAMARA);
+    controls.minDistance = 1.5;
+    controls.maxDistance = 12;
+    controls.maxPolarAngle = Math.PI / 2 - 0.02; // no permite ver por debajo del suelo
+    controls.update();
+ 
+    // ===================================================================
+    // 4. ILUMINACIÓN
+    // ===================================================================
+    // Luz ambiental suave: evita que las zonas en sombra queden negras
+    const luzAmbiente = new THREE.AmbientLight(0xffffff, 0.45);
+    scene.add(luzAmbiente);
+ 
+    // Luz hemisférica sutil (cielo/tierra) para dar volumen natural
+    const luzHemi = new THREE.HemisphereLight(0xcfe6ff, 0x6b4a2b, 0.35);
+    scene.add(luzHemi);
+ 
+    // Luz direccional: simula el sol agronómico y proyecta sombras
+    const sol = new THREE.DirectionalLight(0xfff3d6, 2.2);
+    sol.position.set(4, 8, 5);
+    sol.castShadow = true;                 // ← esta luz proyecta sombras
+    sol.shadow.mapSize.set(2048, 2048);    // resolución del mapa de sombras
+    sol.shadow.camera.near = 1;
+    sol.shadow.camera.far = 25;
+    sol.shadow.camera.left = -5;           // volumen de sombra ajustado a la escena
+    sol.shadow.camera.right = 5;
+    sol.shadow.camera.top = 5;
+    sol.shadow.camera.bottom = -5;
+    sol.shadow.bias = -0.0004;             // evita artefactos ("acné" de sombra)
+    sol.shadow.normalBias = 0.02;
+    scene.add(sol);
+ 
+    // ===================================================================
+    // 5. CONSTRUCCIÓN DE LA PLANTA MODULAR
+    // ===================================================================
+    // Grupo global: todo lo que sea "planta" cuelga de aquí.
+    const plantaGroup = new THREE.Group();
+    plantaGroup.name = 'plantaGroup';
+    scene.add(plantaGroup);
+ 
+    // ---------- 5.1 SUELO ----------
+    // Plano horizontal café que solo RECIBE sombras.
+    const suelo = new THREE.Mesh(
+      new THREE.PlaneGeometry(12, 12),
+      new THREE.MeshStandardMaterial({ color: COLORES_INICIALES.suelo, roughness: 1 })
+    );
+    suelo.name = 'suelo';
+    suelo.rotation.x = -Math.PI / 2; // de vertical (XY) a horizontal (XZ)
+    suelo.receiveShadow = true;
+    plantaGroup.add(suelo);
+ 
+    // ---------- 5.2 TALLO ----------
+    // Cilindro delgado. Se traslada la geometría para que su BASE esté en y=0,
+    // así al escalar en Y crece hacia arriba desde el suelo.
+    const geoTallo = new THREE.CylinderGeometry(
+      RADIO_TALLO_BASE * 0.7,  // radio superior (más delgado)
+      RADIO_TALLO_BASE,        // radio inferior
+      ALTURA_TALLO_BASE,
+      12
+    );
+    geoTallo.translate(0, ALTURA_TALLO_BASE / 2, 0);
+    const tallo = new THREE.Mesh(
+      geoTallo,
+      new THREE.MeshStandardMaterial({ color: COLORES_INICIALES.tallo, roughness: 0.7 })
+    );
+    tallo.name = 'tallo';
+    tallo.castShadow = true;
+    tallo.receiveShadow = true;
+    plantaGroup.add(tallo);
+ 
+    // ---------- 5.3 HOJAS ----------
+    // Función auxiliar: crea una hoja lanceolada y curvada (plano deformado).
+    //   largo     → longitud de la hoja
+    //   ancho     → ancho máximo
+    //   curvatura → cuánto se arquea hacia afuera (caída de la punta)
+    function crearGeometriaHoja(largo, ancho, curvatura) {
+      const geo = new THREE.PlaneGeometry(ancho, largo, 4, 12);
+      geo.translate(0, largo / 2, 0); // la base de la hoja queda en el origen
+      const pos = geo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const t = pos.getY(i) / largo;                 // 0 (base) → 1 (punta)
+        pos.setX(i, pos.getX(i) * Math.pow(1 - t, 0.55) + 0); // afina hacia la punta
+        pos.setZ(i, curvatura * t * t * largo);       // arqueo parabólico
+      }
+      pos.needsUpdate = true;
+      geo.computeVertexNormals();
+      return geo;
+    }
+ 
+    // Material compartido por todas las hojas (doble cara, pues son planas)
+    const materialHojas = new THREE.MeshStandardMaterial({
+      color: COLORES_INICIALES.hojas,
+      roughness: 0.65,
+      side: THREE.DoubleSide
+    });
+ 
+    // Grupo contenedor de hojas
+    const hojas = new THREE.Group();
+    hojas.name = 'hojas';
+    plantaGroup.add(hojas);
+ 
+    // Definición de cada hoja (fracción de altura del tallo donde nace,
+    // giro alrededor del tallo, inclinación respecto a la vertical, tamaño).
+    const DEFINICION_HOJAS = [
+      { fraccion: 0.28, giro: 0.0,              inclinacion: 1.05, largo: 1.25, ancho: 0.16, curvatura: 0.45 },
+      { fraccion: 0.45, giro: Math.PI * 0.75,   inclinacion: 0.95, largo: 1.10, ancho: 0.15, curvatura: 0.40 },
+      { fraccion: 0.62, giro: Math.PI * 1.45,   inclinacion: 0.85, largo: 0.95, ancho: 0.13, curvatura: 0.35 }
+    ];
+ 
+    DEFINICION_HOJAS.forEach((def, i) => {
+      // Pivote: se ubica en el tallo y gira alrededor de él (eje Y)
+      const pivote = new THREE.Group();
+      pivote.name = `hoja_pivote_${i}`;
+      pivote.rotation.y = def.giro;
+      pivote.position.y = def.fraccion * ALTURA_TALLO_BASE;
+ 
+      // Malla de la hoja: se inclina hacia afuera (eje X local)
+      const malla = new THREE.Mesh(
+        crearGeometriaHoja(def.largo, def.ancho, def.curvatura),
+        materialHojas
+      );
+      malla.name = `hoja_${i}`;
+      malla.rotation.x = def.inclinacion;
+      malla.castShadow = true;
+      malla.receiveShadow = true;
+ 
+      // Guardamos valores base para poder reescalar/rotar de forma relativa
+      pivote.userData = { fraccion: def.fraccion, giroBase: def.giro };
+      malla.userData  = { inclinacionBase: def.inclinacion };
+ 
+      pivote.add(malla);
+      hojas.add(pivote);
+    });
+ 
+    // ---------- 5.4 ESPIGA ----------
+    // Grupo con el cuerpo del grano (cápsula dorada) + aristas (cebada barbada).
+    const espiga = new THREE.Group();
+    espiga.name = 'espiga';
+    espiga.position.y = ALTURA_TALLO_BASE; // cúspide del tallo
+    plantaGroup.add(espiga);
+ 
+    const materialEspiga = new THREE.MeshStandardMaterial({
+      color: COLORES_INICIALES.espiga,
+      roughness: 0.55
+    });
+    // Aristas ligeramente más claras
+    const materialAristas = new THREE.MeshStandardMaterial({
+      color: new THREE.Color(COLORES_INICIALES.espiga).offsetHSL(0, -0.05, 0.1),
+      roughness: 0.6
+    });
+ 
+    // Cuerpo de la espiga (base en y=0 del grupo)
+    const LARGO_ESPIGA = 0.45;
+    const cuerpoEspiga = new THREE.Mesh(
+      new THREE.CapsuleGeometry(0.07, LARGO_ESPIGA, 6, 12),
+      materialEspiga
+    );
+    cuerpoEspiga.name = 'espiga_cuerpo';
+    cuerpoEspiga.position.y = LARGO_ESPIGA / 2 + 0.07;
+    cuerpoEspiga.castShadow = true;
+    espiga.add(cuerpoEspiga);
+ 
+    // Aristas: conos delgados distribuidos en espiral alrededor del cuerpo
+    const geoArista = new THREE.ConeGeometry(0.007, 0.6, 5);
+    geoArista.translate(0, 0.3, 0); // base de la arista en el origen local
+    const NUM_ARISTAS = 18;
+    for (let i = 0; i < NUM_ARISTAS; i++) {
+      const arista = new THREE.Mesh(geoArista, materialAristas);
+      const pivoteArista = new THREE.Group();
+      const altura = 0.12 + (i / NUM_ARISTAS) * (LARGO_ESPIGA - 0.05);
+      pivoteArista.position.y = altura;
+      pivoteArista.rotation.y = i * 2.4;       // ángulo áureo aprox. → distribución uniforme
+      arista.rotation.x = 0.16;                // se abren ligeramente hacia afuera
+      arista.position.z = 0.05;
+      arista.castShadow = true;
+      pivoteArista.add(arista);
+      espiga.add(pivoteArista);
+    }
+ 
+    // ===================================================================
+    // 6. OBJETO DE REFERENCIAS A LOS NODOS
+    // ===================================================================
+    // Punto de acceso único para biophysics.js (y para la consola del navegador).
+    export const plantNodes = { suelo, tallo, hojas, espiga };
+ 
+    // ===================================================================
+    // 7. FUNCIÓN DE ACTUALIZACIÓN REACTIVA
+    // ===================================================================
+    /**
+     * Actualiza el aspecto de la planta a partir de atributos biofísicos.
+     * Todos los campos son OPCIONALES: solo se aplican los que se envíen.
+     *
+     * @param {Object}  atributos
+     * @param {number}  [atributos.escalaTallo]       Factor de altura del tallo (1 = base).
+     * @param {number}  [atributos.escalaGrosorTallo] Factor de grosor del tallo.
+     * @param {number}  [atributos.escalaHojas]       Factor de tamaño de las hojas.
+     * @param {number}  [atributos.rotacionHojas]     Cambio de apertura de hojas (rad, + = más abiertas).
+     * @param {number}  [atributos.giroHojas]         Giro global de hojas alrededor del tallo (rad).
+     * @param {number}  [atributos.escalaEspiga]      Factor de tamaño de la espiga.
+     * @param {number}  [atributos.inclinacionEspiga] Cabeceo de la espiga (rad), p. ej. por peso del grano.
+     * @param {number|string} [atributos.colorSuelo]  Color del suelo (hex o CSS).
+     * @param {number|string} [atributos.colorTallo]  Color del tallo.
+     * @param {number|string} [atributos.colorHojas]  Color de las hojas.
+     * @param {number|string} [atributos.colorEspiga] Color de la espiga.
+     * @param {boolean} [atributos.visibleEspiga]     Mostrar/ocultar la espiga.
+     */
+    export function actualizarNodos3D(atributos = {}) {
+      const a = atributos;
+ 
+      // --- Tallo: altura (escala Y) y grosor (escala X/Z) ---
+      if (typeof a.escalaTallo === 'number') {
+        tallo.scale.y = Math.max(a.escalaTallo, 0.01);
+      }
+      if (typeof a.escalaGrosorTallo === 'number') {
+        tallo.scale.x = tallo.scale.z = Math.max(a.escalaGrosorTallo, 0.01);
+      }
+ 
+      // Altura efectiva del tallo en este momento (sirve para anclar hojas y espiga)
+      const alturaActual = ALTURA_TALLO_BASE * tallo.scale.y;
+ 
+      // --- Hojas: reposicionar sobre el tallo, escalar, abrir y girar ---
+      hojas.children.forEach((pivote) => {
+        const malla = pivote.children[0];
+        // Mantener cada hoja en su fracción de altura aunque el tallo cambie
+        pivote.position.y = pivote.userData.fraccion * alturaActual;
+ 
+        if (typeof a.escalaHojas === 'number') {
+          pivote.scale.setScalar(Math.max(a.escalaHojas, 0.01));
+        }
+        if (typeof a.rotacionHojas === 'number') {
+          malla.rotation.x = malla.userData.inclinacionBase + a.rotacionHojas;
+        }
+        if (typeof a.giroHojas === 'number') {
+          pivote.rotation.y = pivote.userData.giroBase + a.giroHojas;
+        }
+      });
+ 
+      // --- Espiga: siempre en la cúspide del tallo ---
+      espiga.position.y = alturaActual;
+      if (typeof a.escalaEspiga === 'number') {
+        espiga.scale.setScalar(Math.max(a.escalaEspiga, 0.01));
+      }
+      if (typeof a.inclinacionEspiga === 'number') {
+        espiga.rotation.z = a.inclinacionEspiga;
+      }
+      if (typeof a.visibleEspiga === 'boolean') {
+        espiga.visible = a.visibleEspiga;
+      }
+ 
+      // --- Colores (aceptan hex numérico o cadena CSS) ---
+      if (a.colorSuelo  !== undefined) suelo.material.color.set(a.colorSuelo);
+      if (a.colorTallo  !== undefined) tallo.material.color.set(a.colorTallo);
+      if (a.colorHojas  !== undefined) materialHojas.color.set(a.colorHojas);
+      if (a.colorEspiga !== undefined) {
+        materialEspiga.color.set(a.colorEspiga);
+        materialAristas.color.set(a.colorEspiga).offsetHSL(0, -0.05, 0.1);
+      }
+    }
+ 
+    // Accesibles desde la consola del navegador para pruebas rápidas:
+    //   actualizarNodos3D({ escalaTallo: 0.5, colorHojas: '#8bc34a' })
+    window.plantNodes = plantNodes;
+    window.actualizarNodos3D = actualizarNodos3D;
+ 
+    // ===================================================================
+    // 8. ETAPAS DE PRUEBA (botones del panel) — SOLO PARA VALIDAR EL PASO 1
+    // ===================================================================
+    const ETAPAS_PRUEBA = {
+      vegetativo: {
+        escalaTallo: 0.45, escalaGrosorTallo: 0.8, escalaHojas: 0.8,
+        rotacionHojas: -0.2, escalaEspiga: 0.01, visibleEspiga: false,
+        inclinacionEspiga: 0,
+        colorTallo: 0x6dbb3a, colorHojas: 0x5cb52e, colorEspiga: 0x9ccc4a
+      },
+      espigamiento: {
+        escalaTallo: 0.85, escalaGrosorTallo: 1, escalaHojas: 1,
+        rotacionHojas: 0, escalaEspiga: 0.8, visibleEspiga: true,
+        inclinacionEspiga: 0,
+        colorTallo: 0x5a9a2f, colorHojas: 0x4c9a2a, colorEspiga: 0x9ccc4a
+      },
+      madurez: {
+        escalaTallo: 1, escalaGrosorTallo: 1.05, escalaHojas: 0.9,
+        rotacionHojas: 0.25, escalaEspiga: 1.15, visibleEspiga: true,
+        inclinacionEspiga: 0.35,
+        colorTallo: 0xc9b04a, colorHojas: 0xb7a444, colorEspiga: 0xd8b13a
+      },
+      reset: {
+        escalaTallo: 1, escalaGrosorTallo: 1, escalaHojas: 1,
+        rotacionHojas: 0, giroHojas: 0, escalaEspiga: 1, visibleEspiga: true,
+        inclinacionEspiga: 0,
+        colorTallo: COLORES_INICIALES.tallo, colorHojas: COLORES_INICIALES.hojas,
+        colorEspiga: COLORES_INICIALES.espiga, colorSuelo: COLORES_INICIALES.suelo
+      }
+    };
+ 
+    document.querySelectorAll('#panel button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        actualizarNodos3D(ETAPAS_PRUEBA[btn.dataset.etapa]);
+      });
+    });
+ 
+    // ===================================================================
+    // 9. REDIMENSIONAMIENTO DE VENTANA
+    // ===================================================================
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+ 
+    // ===================================================================
+    // 10. BUCLE DE RENDERIZADO
+    // ===================================================================
+    function animar() {
+      requestAnimationFrame(animar);
+      controls.update(); // necesario para el amortiguamiento (damping)
+      renderer.render(scene, camera);
+    }
+    animar();
+  </script>
+</body>
 </html>
