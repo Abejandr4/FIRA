@@ -1,0 +1,15 @@
+/* Generado a partir del index.css de Figma Make (Dashboard Reto AgroCebada 2026). */
+.chat-fab { position: absolute; z-index: 9; left: 20px; bottom: 120px; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--amber); color: var(--amber); background: var(--surface-2); cursor: pointer; box-shadow: 0 8px 24px #0009; }
+.chat-fab:hover { background: var(--amber); color: #18130a; }
+.chat-panel { position: absolute; z-index: 10; left: 20px; bottom: 176px; width: 360px; height: 500px; display: grid; grid-template-rows: auto 1fr auto auto; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--radius); box-shadow: 0 18px 50px #000b; padding: 16px; animation: rise 180ms ease; }
+.chat-title { font-size: 12px; font-weight: 600; margin-top: 5px; }
+.chat-body { padding: 18px 0; overflow-y: auto; }
+.bot-message, .user-message { max-width: 86%; padding: 10px; border-radius: var(--radius); font-size: 10px; line-height: 1.5; margin-bottom: 10px; }
+.bot-message { background: var(--surface-3); border: 1px solid var(--line); }
+.user-message { background: var(--amber-soft); border: 1px solid #55471f; margin-left: auto; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chips button { border: 1px solid var(--line-strong); border-radius: 999px; background: transparent; color: var(--muted); padding: 6px 9px; font-size: 8px; cursor: pointer; }
+.chips button:hover { color: var(--amber); border-color: var(--amber); }
+.chat-input { border: 1px solid var(--line-strong); border-radius: var(--radius); height: 38px; display: flex; align-items: center; padding-left: 10px; }
+.chat-input button { width: 34px; height: 100%; border: 0; background: transparent; color: var(--amber); display: grid; place-items: center; }
+.chat-warning { color: var(--faint); font-size: 7px; text-align: center; margin-top: 9px; }
