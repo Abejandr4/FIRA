@@ -2,16 +2,14 @@
 
 ## Responsables por carpeta
 
-Cada quien refina su carpeta sin pisar las de los demás. Escribe tu nombre en la tabla.
-
 | Área | Carpeta | Responsable |
 | --- | --- | --- |
-| Territorio (mapa, panel general) | `src/features/territorio/`, `src/components/layout/` | *(por asignar)* |
-| Parcela (tarjeta, rendimiento, Dx, financiero) | `src/features/parcela/` | *(por asignar)* |
-| Asistente | `src/features/asistente/` | *(por asignar)* |
-| Simulador (resultados, explorador, motor) | `src/features/simulador/` excepto `planta/` | *(por asignar)* |
-| Planta 3D | `src/features/simulador/planta/` | *(integrante de AnimacionCebada)* |
-| Datos (exportador y contrato) | `scripts/`, `src/data/`, `docs/CONTRATO_DASHBOARD.md` | *(por asignar)* |
+| Territorio (mapa, panel general) | `src/features/territorio/`, `src/components/layout/` | Karen y Yare |
+| Parcela (tarjeta, rendimiento, Dx, financiero) | `src/features/parcela/` | Karen y Yare |
+| Asistente | `src/features/asistente/` | Ale |
+| Simulador (resultados, explorador, motor) | `src/features/simulador/` excepto `planta/` | Mimi y Ren |
+| Planta 3D | `src/features/simulador/planta/` | Mimi y Ren |
+| Datos (exportador y contrato) | `scripts/`, `src/data/`, `docs/CONTRATO_DASHBOARD.md` | Ale |
 
 **Zonas compartidas** (cambios solo por PR con revisión de otra persona): `src/components/ui/`, `src/styles/`, `src/lib/`, `src/data/tipos.ts`, `package.json`.
 
