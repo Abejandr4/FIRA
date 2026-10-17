@@ -1,0 +1,7 @@
+/* Generado a partir del index.css de Figma Make (Dashboard Reto AgroCebada 2026). */
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 760px; min-height: 100vh; background: var(--bg); }
+.app-shell, .simulator { min-height: 100vh; background: var(--bg); }
+@keyframes slide-in { from { opacity: 0; transform: translateX(15px); } to { opacity: 1; transform: none; } }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes sway { from { transform: rotate(-1deg); } to { transform: rotate(1.5deg); } }

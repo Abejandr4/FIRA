@@ -1,0 +1,6 @@
+/* Entrada de estilos. Cada feature importa su propio .css desde su componente principal. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+@import './tokens.css';
+@import './base.css';
+@import '../components/ui/ui.css';
