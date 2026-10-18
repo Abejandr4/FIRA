@@ -5,7 +5,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { cargarJSON } from "./cargar";
 import type {
-  EntradaDiaria, FilaSensibilidad, MetaModelo, ParamsSimulador, Parcela, SerieNdvi, VariablesSimulador,
+  EntradaDiaria, FilaSensibilidad, MetaModelo, ParamsSimulador, Parcela, SerieNdvi, VariablesSimulador, ColeccionGeo, PropsEstado, PropsParcelaGeo,
 } from "./tipos";
 import type { ModeloRidge, VariablesModelo } from "../features/parcela/modelo/ridge";
 
@@ -36,6 +36,8 @@ export function useRecurso<T>(ruta: string | null): Recurso<T> {
 export const useMeta = () => useRecurso<MetaModelo>("meta.json");
 export const useParcelas = () => useRecurso<Parcela[]>("parcelas.json");
 export const useNdvi = () => useRecurso<SerieNdvi>("ndvi.json");
+export const useEstadosGeo = () => useRecurso<ColeccionGeo<PropsEstado>>("estados.geojson");
+export const useParcelasGeo = () => useRecurso<ColeccionGeo<PropsParcelaGeo>>("parcelas.geojson");
 export const useVariablesSimulador = () => useRecurso<VariablesSimulador[]>("simulador/variables.json");
 export const useSensibilidad = () => useRecurso<FilaSensibilidad[]>("simulador/sensibilidad.json");
 export const useParamsSimulador = () => useRecurso<ParamsSimulador>("simulador/params.json");

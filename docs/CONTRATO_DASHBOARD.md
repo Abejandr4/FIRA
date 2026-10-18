@@ -51,6 +51,10 @@ Al mover una variable, la nueva predicción es `pred + corr(x modificada) − co
 
 Polígonos simplificados (~3 m) de `RC/app_data/parcelas.geojson`; propiedad `id`.
 
+## `estados.geojson`
+
+Límites de los 3 estados (Hidalgo, Puebla, Tlaxcala), en grados lon/lat. Propiedades: `cve` (clave INEGI, texto) y `nombre`. El mapa calcula en el navegador el conteo de parcelas y la media de `pred` por estado. TODO(datos): origen y generación desde `scripts/exportar_datos.py`.
+
 ## `ndvi.json`
 
 `{ fechas: [...], serie: { "AGC_001": [ndvi, …] } }`, NDVI Sentinel-2 en malla de 5 días (abril–octubre 2025). Origen: `ndvi_promedio` de `RC/serie_s2.csv`.
