@@ -15,7 +15,8 @@ export function num(x: number | null | undefined, decimales = 1): string {
 
 /** Con signo explícito: "+0,12", "−0,08". */
 export function numSigno(x: number, decimales = 2): string {
-  return `${x > 0 ? "+" : x < 0 ? "" : "±"}${num(x, decimales)}`;
+  const r = Number(x.toFixed(decimales));          // evita «−0,00» y «+0,00»
+  return `${r > 0 ? "+" : r < 0 ? "" : "±"}${num(r, decimales)}`;
 }
 
 export function pct(x: number, decimales = 1): string {

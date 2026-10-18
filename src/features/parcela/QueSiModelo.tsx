@@ -1,8 +1,10 @@
 /**
+ * Que si modelo
  * "¿Qué pasaría si…?" del modelo de rendimiento (antes, el expander de la app de Streamlit).
  * Mueve variables satelitales de la parcela y recalcula la predicción en vivo con la fórmula del ridge.
  * Es una exploración del modelo, no un efecto causal. No se enlaza con el simulador ni con lo financiero.
  */
+
 import { useMemo, useState } from "react";
 import { Button, Cargando, ErrorDatos, Icon, Label, Tooltip } from "../../components/ui";
 import { combinar, useMeta, useModeloRidge, useVariablesModelo } from "../../data/hooks";
@@ -59,6 +61,11 @@ function Explorador({ parcela: p, modelo, vars, meta }: { parcela: Parcela; mode
   return (
     <>
       <p>Mueve una variable de la parcela y el modelo recalcula la predicción al instante. Solo cambia la corrección satelital; la estimación por ubicación queda igual.</p>
+      <p className="quesi-escala">
+        El modelo reacciona poco a estas variables, y eso es parte del resultado: la corrección satelital
+        está muy contenida (penalización alpha = {num(modelo.alpha, 0)}) y casi toda la predicción viene
+        de la ubicación.
+      </p>
       <div className="quesi-resultado" aria-live="polite">
         <div><span>Predicción original</span><b>{num(p.pred, 2)} t/ha</b></div>
         <div><span>Con tus valores</span><b>{num(nueva, 2)} t/ha</b></div>
