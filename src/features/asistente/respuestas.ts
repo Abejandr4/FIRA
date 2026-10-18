@@ -56,13 +56,6 @@ const INTENCIONES: Intencion[] = [
         ? ` En las pruebas, con vecinos conocidos las variables satelitales no mejoraron de forma detectable el error (${num(a.rmse_prior, 3)} → ${num(a.rmse, 3)} t/ha); sin vecinos cercanos la mejora fue pequeña (${num(e.rmse_prior, 3)} → ${num(e.rmse, 3)} t/ha).` : "";
       return `Porque la ubicación ya explica casi todo el rendimiento esperado, y las imágenes de satélite no distinguen de forma clara entre parcelas vecinas.${num2}`; },
   },
-  { // ¿Qué muestran los colores del mapa?
-    patron: /(color|leyenda|gradiente)/,
-    responder: ({ todas }) => {
-      if (!todas.length) return "Los datos del mapa aún no se cargan.";
-      const v = todas.map((p) => p.pred);
-      return `El color de cada parcela indica su rendimiento estimado, de bajo (${num(Math.min(...v), 2)} t/ha) a alto (${num(Math.max(...v), 2)} t/ha), según la leyenda del mapa. En las parcelas de entrenamiento es la estimación hecha sin usar su rendimiento real.`; },
-  },
 ];
 
 function buscarTermino(norm: string): Termino | null {
@@ -94,4 +87,4 @@ export function responderLocal(entrada: string, c: Ctx): Respuesta | null {
 }
 
 export const SUGERENCIAS_PARCELA = ["¿Cómo se calculó esta estimación?", "¿Qué tan confiable es esta estimación?", "Compara con el municipio", "¿Qué significa confianza baja?"];
-export const SUGERENCIAS_GENERALES = ["¿Qué tan bueno es el modelo?", "¿Qué datos usa el modelo?", "¿Qué es el prior?", "¿Qué muestran los colores del mapa?"];
+export const SUGERENCIAS_GENERALES = ["¿Qué tan bueno es el modelo?", "¿Qué datos usa el modelo?", "¿Qué es el prior?"];
