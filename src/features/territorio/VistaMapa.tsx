@@ -85,7 +85,7 @@ export function VistaMapa({ ruta, navegar }: { ruta: Extract<Ruta, { vista: "map
           <button type="button" className="chat-fab" onClick={() => setChat(!chat)} aria-label="Abrir asistente" aria-expanded={chat}>
             <Icon name="message" />
           </button>
-          {chat && <Chat parcela={parcela} onCerrar={() => setChat(false)} />}
+          <Chat abierto={chat} parcela={parcela} onCerrar={() => setChat(false)} />
         </section>
         {parcela
           ? <PanelRendimiento parcela={parcela} onSimulador={abrirSimulador} onQueSi={() => setCajon("quesi")} />
