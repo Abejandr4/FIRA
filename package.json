@@ -14,6 +14,7 @@
     "verificar:modelo": "tsx scripts/verificar_modelo.ts"
   },
   "dependencies": {
+    "maplibre-gl": "^5.24.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "three": "^0.160.0"
