@@ -18,12 +18,12 @@ export function lerpColor(a: number, b: number, t: number): number {
 
 export const hex = (c: number) => `#${c.toString(16).padStart(6, "0")}`;
 
-// Colores del prototipo
+// Colores del prototipo (rediseño visual: ETAPAS_PRUEBA y COLORES_INICIALES de legacy/AnimacionCebada)
 export const COLOR = {
-  hojaVerde: 0x4c9a2a, hojaTierna: 0x5cb52e, hojaSeca: 0xc9b04a, hojaMadura: 0xb7a444,
-  talloVerde: 0x5a9a2f, talloMaduro: 0xc9b04a,
-  espigaVerde: 0x9ccc4a, espigaDorada: 0xd8b13a,
-  suelo: 0x6b4a2b,
+  hojaVerde: 0x58ad30, hojaTierna: 0x66bb36, hojaSeca: 0xc9b04a, hojaMadura: 0xc2ad50,
+  talloVerde: 0x86b545, talloMaduro: 0xd9bf62,
+  espigaVerde: 0x9ccc4a, espigaDorada: 0xe2b441,
+  suelo: 0x5e4128,
 };
 
 /** Estrés visual 0–1 a partir de KS (KS ≥ 0.95 se ve sano). */
