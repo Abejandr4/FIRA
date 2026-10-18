@@ -68,11 +68,7 @@ ${contexto.slice(0, MAX_CHARS_CONTEXTO)}`;
     } catch {
       return json({ error: "Servicio no disponible" }, 502, cors);
     }
-    if (!r.ok || !r.body) {
-      const detalle = await r.text().catch(() => "");
-      console.log("OpenRouter respondi\xF3", r.status, detalle.slice(0, 600));
-      return json({ error: r.status === 429 ? "L\xEDmite de uso" : "Servicio no disponible" }, r.status === 429 ? 429 : 502, cors);
-    }
+    if (!r.ok || !r.body) return json({ error: r.status === 429 ? "El modelo esta al l\xEDmite" : "Servicio no disponible" }, r.status === 429 ? 429 : 502, cors);
   }
 };
 

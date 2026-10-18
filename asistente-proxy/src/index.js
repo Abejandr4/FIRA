@@ -67,10 +67,6 @@ export default {
       });
     } catch { return json({ error: "Servicio no disponible" }, 502, cors); }
 
-    if (!r.ok || !r.body) {
-  const detalle = await r.text().catch(() => "");
-  console.log("OpenRouter respondió", r.status, detalle.slice(0, 600));   // solo en la terminal de wrangler
-  return json({ error: r.status === 429 ? "Límite de uso" : "Servicio no disponible" }, r.status === 429 ? 429 : 502, cors);
-}
+    if (!r.ok || !r.body) return json({ error: r.status === 429 ? "El modelo esta al límite" : "Servicio no disponible" }, r.status === 429 ? 429 : 502, cors);
   },
 };
