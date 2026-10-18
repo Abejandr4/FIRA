@@ -43,3 +43,42 @@
 .model-note p { margin: 7px 0 0; font-size: var(--fs-base); line-height: 1.6; }
 .model-note b { color: var(--text); }
 .source-note { margin-top: 12px; color: var(--faint); font-size: var(--fs-sm); }
+/* ===== Añadidos: globo (MapLibre). Pegar al final de territorio.css ===== */
+.globe-wrap { position: absolute; inset: 0; overflow: hidden; }
+.globe-space {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(1.5px 1.5px at 8% 14%, #fff, transparent), radial-gradient(1px 1px at 17% 72%, #cbd5e1, transparent),
+    radial-gradient(1.5px 1.5px at 26% 33%, #fff, transparent), radial-gradient(1px 1px at 34% 88%, #e2e8f0, transparent),
+    radial-gradient(1px 1px at 45% 9%, #fff, transparent), radial-gradient(1.5px 1.5px at 56% 60%, #cbd5e1, transparent),
+    radial-gradient(1px 1px at 63% 22%, #fff, transparent), radial-gradient(1px 1px at 71% 81%, #e2e8f0, transparent),
+    radial-gradient(1.5px 1.5px at 79% 40%, #fff, transparent), radial-gradient(1px 1px at 88% 12%, #cbd5e1, transparent),
+    radial-gradient(1px 1px at 93% 67%, #fff, transparent), radial-gradient(1px 1px at 4% 52%, #e2e8f0, transparent),
+    radial-gradient(ellipse at center, #101c2e 0%, var(--bg) 72%);
+}
+/* El selector doble gana a `.maplibregl-map { position: relative }` sin importar el orden de los CSS. */
+.globe-wrap .globe-canvas { position: absolute; inset: 0; background: transparent; }
+.globe-canvas .maplibregl-canvas { outline: none; }
+.globe-label {
+  color: var(--text); font-size: var(--fs-base); font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+  text-shadow: 0 1px 6px var(--bg), 0 0 2px var(--bg); pointer-events: none; transition: opacity 200ms ease;
+}
+.globe-canvas.is-cerca .globe-label { opacity: 0; }
+.globe-tooltip {
+  position: absolute; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 9px 13px;
+  background: #11171be8; border: 1px solid var(--line-strong); border-radius: var(--radius);
+  font-size: var(--fs-base); color: var(--text); pointer-events: none; white-space: nowrap;
+}
+.globe-tooltip span { color: var(--muted); font-size: var(--fs-sm); }
+.globe-back {
+  position: absolute; top: 18px; right: 18px; z-index: 2; padding: 8px 15px; cursor: pointer;
+  background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 100px;
+  color: var(--text); font-size: var(--fs-base);
+}
+.globe-back:hover { color: var(--amber); background: var(--surface-3); }
+.globe-aviso {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; display: flex; gap: 12px;
+  align-items: center; padding: 10px 14px; background: var(--surface-2); border: 1px solid var(--line);
+  border-radius: var(--radius); color: var(--muted); font-size: var(--fs-md);
+}
+.globe-aviso button { cursor: pointer; background: none; border: 1px solid var(--line-strong); border-radius: var(--radius); color: var(--amber); padding: 4px 10px; }

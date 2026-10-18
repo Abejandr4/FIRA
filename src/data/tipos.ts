@@ -85,4 +85,12 @@ export interface FilaSensibilidad {
   rho_spearman: number | null;
 }
 
+/** public/data/estados.geojson y parcelas.geojson (grados lon/lat). */
+export interface PropsEstado { cve: string; nombre: string }
+export interface PropsParcelaGeo { id: string }
+export interface ColeccionGeo<P> {
+  type: "FeatureCollection";
+  features: { type: "Feature"; properties: P; geometry: { type: string; coordinates: unknown } }[];
+}
+
 export type { EntradaDiaria, ParamsSimulador, Variables12, Extras } from "../features/simulador/motor/tipos";

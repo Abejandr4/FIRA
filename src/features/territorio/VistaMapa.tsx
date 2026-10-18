@@ -16,8 +16,7 @@ import { MapaEstudio } from "./MapaEstudio";
 import { PanelTerritorial } from "./PanelTerritorial";
 import "./territorio.css";
 
-/** Parcela de ejemplo que abre el mapa esquemático mientras no exista el mapa real. */
-const PARCELA_EJEMPLO = "AGC_011";
+
 
 export function VistaMapa({ ruta, navegar }: { ruta: Extract<Ruta, { vista: "mapa" }>; navegar: (r: Ruta) => void }) {
   const parcelas = useParcelas();
@@ -32,9 +31,14 @@ export function VistaMapa({ ruta, navegar }: { ruta: Extract<Ruta, { vista: "map
       <Topbar ruta={ruta} navegar={navegar} parcelas={parcelas.datos} />
       <main className="workspace">
         <section className="map-area">
-          <MapaEstudio estado={estado} parcelaSeleccionada={parcela?.id}
-            onEstado={(e) => navegar({ vista: "mapa", estado: e })}
-            onParcela={() => navegar({ vista: "mapa", parcela: PARCELA_EJEMPLO })} />
+          <MapaEstudio 
+          estado={estado} 
+          parcelaSeleccionada={parcela?.id} 
+          parcelas={parcelas.datos}  
+          onEstado={(e) => navegar({ vista: "mapa", estado: e })}  
+          onParcela={(id) => navegar({ vista: "mapa", parcela: id })}  
+          onVolver={() => navegar(parcela ? { vista: "mapa", estado: parcela.estado } : { vista: "mapa" })} 
+/>
           <div className="map-controls">
             <button type="button" aria-label="Acercar">+</button><button type="button" aria-label="Alejar">−</button>
             <button type="button" aria-label="Capas"><Icon name="layers" size={17} /></button>
@@ -44,7 +48,7 @@ export function VistaMapa({ ruta, navegar }: { ruta: Extract<Ruta, { vista: "map
             {/* TODO(territorio): mínimo y máximo de `pred` */}
             <div><span>Bajo · XX,X t/ha</span><span>Alto · XX,X t/ha</span></div>
           </div>
-          <div className="map-attribution">© CARTO · © OpenStreetMap</div>
+          <div className="map-attribution">Tiles © Esri</div>
           {!estado && <div className="map-hint"><Icon name="location" size={17} /> Selecciona un estado para explorar sus parcelas</div>}
           {ruta.parcela && parcelas.estado === "listo" && !parcela && (
             <div className="map-hint" role="alert"><Icon name="warning" size={17} /> No existe la parcela “{ruta.parcela}”</div>
