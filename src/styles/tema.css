@@ -1,0 +1,104 @@
+/* Tema claro / oscuro. El tema activo vive en <html data-theme="dark|light"> (ver src/app/tema.ts).
+   tokens.css define el tema oscuro original; aquí se agregan las variables nuevas y el tema claro. */
+
+/* ---- Variables nuevas, comunes a todo el dashboard ---- */
+:root {
+  /* Series categóricas (estados, conjuntos). Validadas para daltonismo sobre --surface. */
+  --s1: #239c82;
+  --s2: #c08a1e;
+  --s3: #7f86e0;
+  /* Rampa secuencial de rendimiento (bajo → alto) */
+  --seq-lo: #1d423d;
+  --seq-hi: #7fd3bd;
+  --glass: #0f1418cc;
+  --shadow: 0 18px 50px #0009;
+  --font-display: "Fraunces", "DM Sans", Georgia, serif;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f5f3ed;
+  --surface: #ffffff;
+  --surface-2: #f0eee7;
+  --surface-3: #e7e4da;
+  --line: #dfdbd0;
+  --line-strong: #c8c2b4;
+  --text: #1a2023;
+  --muted: #566166;
+  --faint: #6f797e;
+  --amber: #a8730c;
+  --amber-soft: #f7eed8;
+  --teal: #1f7a67;
+  --teal-dark: #cfe6df;
+  --danger: #b4473a;
+  --s1: #13866f;
+  --s2: #b07a10;
+  --s3: #5560c4;
+  --seq-lo: #d3e9e2;
+  --seq-hi: #0f5e4f;
+  --glass: #ffffffd9;
+  --shadow: 0 18px 40px #1a20231f;
+}
+
+html { transition: background-color .35s ease, color .35s ease; }
+body { transition: background-color .35s ease; }
+
+/* ---- Interruptor de tema ---- */
+.tema-toggle {
+  position: relative; flex: none; width: 62px; height: 34px; padding: 3px; display: flex; align-items: center;
+  border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface-2); cursor: pointer;
+  transition: background-color .3s ease, border-color .3s ease;
+}
+.tema-toggle:hover { border-color: var(--amber); }
+.tema-toggle__fondo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 9px; color: var(--faint); }
+.tema-toggle__perilla {
+  position: relative; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--amber); color: #17130a; box-shadow: 0 2px 8px #0005;
+  transform: translateX(0); transition: transform 460ms cubic-bezier(.34, 1.56, .64, 1), background-color .3s ease;
+}
+.tema-toggle[aria-checked="true"] .tema-toggle__perilla { transform: translateX(28px); }
+.tema-toggle:active .tema-toggle__perilla { width: 30px; }
+@media (prefers-reduced-motion: reduce) { .tema-toggle__perilla { transition: none; } }
+
+/* ---- Topbar del mapa: columna extra para el interruptor y marca como botón ---- */
+.topbar { grid-template-columns: 250px 1fr minmax(270px, 340px) auto auto; }
+.brand--boton { border: 0; background: none; padding: 0; text-align: left; cursor: pointer; color: inherit; }
+.brand--boton:hover strong { color: var(--amber); }
+@media (max-width: 1100px) { .topbar { grid-template-columns: 210px 1fr 260px auto; } }
+
+/* ---- Tema claro: colores que estaban escritos a mano en los CSS de cada feature ---- */
+:root[data-theme="light"] .topbar,
+:root[data-theme="light"] .sim-header { background: var(--surface); }
+:root[data-theme="light"] .map-legend,
+:root[data-theme="light"] .globe-tooltip { background: color-mix(in srgb, var(--surface) 94%, transparent); }
+:root[data-theme="light"] .parcel-card { background: var(--surface); border-color: var(--line-strong); box-shadow: var(--shadow); }
+:root[data-theme="light"] .dx-panel,
+:root[data-theme="light"] .chat-panel { box-shadow: var(--shadow); }
+:root[data-theme="light"] .tooltip__content { background: var(--surface); border-color: var(--line-strong); color: var(--text); box-shadow: var(--shadow); }
+:root[data-theme="light"] .search-error { color: var(--danger); box-shadow: var(--shadow); }
+:root[data-theme="light"] .estado-error { background: #fbeceb; border-color: #e5b5ae; color: var(--danger); }
+:root[data-theme="light"] .badge-baja { color: #7a5310; background: #fbf0d6; border-color: #e8cf95; }
+:root[data-theme="light"] .confidence { color: #1f6b5b; background: #e1f1ec; border-color: #a9d3c7; }
+:root[data-theme="light"] .hero-metric { border-color: #e6d3a2; }
+:root[data-theme="light"] .hero-metric > span { color: #8a6a1d; }
+:root[data-theme="light"] .hero-metric .interval { border-top-color: #e6d3a2; }
+:root[data-theme="light"] .user-message { border-color: #e6d3a2; }
+:root[data-theme="light"] .summary,
+:root[data-theme="light"] .signal p { color: var(--muted); }
+:root[data-theme="light"] .bar-track,
+:root[data-theme="light"] .progress,
+:root[data-theme="light"] .percentile,
+:root[data-theme="light"] .comparison-scale { background: var(--surface-3); }
+:root[data-theme="light"] .histogram span { background: var(--teal); }
+:root[data-theme="light"] .line-muted { stroke: var(--faint); }
+:root[data-theme="light"] .button--primary,
+:root[data-theme="light"] .segmented button.active,
+:root[data-theme="light"] .tema-toggle__perilla { color: #fff; }
+:root[data-theme="light"] .button--primary:hover { background: #8f6209; border-color: #8f6209; }
+:root[data-theme="light"] .ndvi-warning { background: var(--amber-soft); border-color: #e6d3a2; color: #7a5310; }
+:root[data-theme="light"] .ks-nivel--poco { color: #1f6b5b; border-color: #a9d3c7; }
+:root[data-theme="light"] .ks-nivel--moderado { color: #7a5310; border-color: #e8cf95; }
+:root[data-theme="light"] .ks-nivel--alto { color: var(--danger); border-color: #e5b5ae; }
+:root[data-theme="light"] .date-input input,
+:root[data-theme="light"] .esc-control input[type="date"],
+:root[data-theme="light"] .esc-control input[type="number"] { color-scheme: light; }
