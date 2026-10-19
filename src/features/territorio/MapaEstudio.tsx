@@ -115,7 +115,7 @@ interface Props {
   parcelas?: Parcela[];
   onEstado: (estado: string) => void;
   onParcela: (id: string) => void;
-  /** Si se pasa, aparece el botón "Regresar" cuando hay un estado o una parcela seleccionados. */
+  /** Si se pasa, aparece el botón para volver al inicio cuando hay una selección activa. */
   onVolver?: () => void;
 }
 
@@ -138,6 +138,7 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
   const actual = useRef({ estado, parcela: parcelaSeleccionada, onEstado, onParcela });
   useEffect(() => { actual.current = { estado, parcela: parcelaSeleccionada, onEstado, onParcela }; });
   const encuadrar = useRef<((animar: boolean) => void) | null>(null);
+  const centrarRegion = useRef<((animar: boolean) => void) | null>(null);
 
   useEffect(() => {
     if (!datos || !contenedor.current) return;
@@ -178,6 +179,15 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
         usuario = false;
         map.flyTo({ center: VISTA.center, zoom: VISTA.zoom, duration });
       }
+    };
+
+    // Siempre encuadra el estado, incluso si hay una parcela abierta.
+    // Sirve para recuperar el contexto territorial sin cambiar la selección ni la ruta.
+    centrarRegion.current = (animar) => {
+      const e = actual.current.estado;
+      if (!e || !datos.cajas[e]) return;
+      usuario = true;
+      map.fitBounds(datos.cajas[e], { padding: 90, duration: animar && !reducido ? 1000 : 0, maxZoom: 11 });
     };
 
     map.on("load", () => {
@@ -304,6 +314,7 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
       ro.disconnect();
       marcadores.forEach((m) => m.remove());
       encuadrar.current = null;
+      centrarRegion.current = null;
       map.remove();
     };
   }, [datos]);
@@ -324,7 +335,14 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
         </div>
       )}
       {onVolver && (estado || parcelaSeleccionada) && (
-        <button type="button" className="globe-back" onClick={onVolver}>← Regresar</button>
+        <div className="globe-actions" aria-label="Controles de navegación del mapa">
+          <button type="button" className="globe-action" onClick={() => centrarRegion.current?.(true)}>
+            ⊙ Centrar región
+          </button>
+          <button type="button" className="globe-action globe-action--primary" onClick={onVolver}>
+            ← Volver al inicio
+          </button>
+        </div>
       )}
       {cargando && <div className="globe-aviso">Cargando mapa…</div>}
       {fallo && (

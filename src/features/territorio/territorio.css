@@ -70,12 +70,15 @@
   font-size: var(--fs-base); color: var(--text); pointer-events: none; white-space: nowrap;
 }
 .globe-tooltip span { color: var(--muted); font-size: var(--fs-sm); }
-.globe-back {
-  position: absolute; top: 18px; right: 18px; z-index: 2; padding: 8px 15px; cursor: pointer;
-  background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 100px;
-  color: var(--text); font-size: var(--fs-base);
+.globe-actions {
+  position: absolute; top: 18px; right: 18px; z-index: 2; display: flex; gap: 8px;
 }
-.globe-back:hover { color: var(--amber); background: var(--surface-3); }
+.globe-action {
+  padding: 8px 15px; cursor: pointer; background: var(--surface-2); border: 1px solid var(--line-strong);
+  border-radius: 100px; color: var(--text); font-size: var(--fs-base);
+}
+.globe-action:hover { color: var(--amber); background: var(--surface-3); }
+.globe-action--primary { border-color: var(--amber); }
 .globe-aviso {
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; display: flex; gap: 12px;
   align-items: center; padding: 10px 14px; background: var(--surface-2); border: 1px solid var(--line);

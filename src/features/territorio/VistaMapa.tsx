@@ -53,7 +53,7 @@ export function VistaMapa({ ruta, navegar }: { ruta: Extract<Ruta, { vista: "map
             parcelas={parcelas.datos}
             onEstado={(e) => navegar({ vista: "mapa", estado: e })}
             onParcela={(id) => navegar({ vista: "mapa", parcela: id })}
-            onVolver={() => navegar(parcela ? { vista: "mapa", estado: parcela.estado } : { vista: "mapa" })}
+            onVolver={() => navegar({ vista: "mapa" })}
           />
           <div className="map-controls">
             <button type="button" aria-label="Acercar">+</button>
