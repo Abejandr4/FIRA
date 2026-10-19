@@ -52,7 +52,7 @@ export function VistaInicio({ navegar }: { navegar: (r: Ruta) => void }) {
             <SeccionDatos parcelas={parcelas} res={res} meta={meta} ndvi={ndvi.datos} estadosGeo={geo.datos} />
             <SeccionModelo parcelas={parcelas} res={res} meta={meta} irMapa={irMapa} />
             <SeccionVariables parcelas={parcelas} res={res} meta={meta} ridge={ridge.datos} />
-            <Cierre res={res} meta={meta} irMapa={() => irMapa()} />
+            <Cierre res={res} meta={meta} parcelas={parcelas} estadosGeo={geo.datos} navegar={navegar} />
           </>
         ) : (
           <div className="contenedor seccion">

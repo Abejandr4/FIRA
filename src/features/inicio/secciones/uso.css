@@ -1,0 +1,73 @@
+/* 05 · Para qué sirve (Cierre). Colores desde tokens.css / tema.css. */
+.uso { background: radial-gradient(55% 60% at 25% 55%, color-mix(in srgb, var(--s1) 9%, transparent), transparent 70%); }
+.uso__grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 40px; align-items: center; }
+
+.uso__escena-wrap { position: relative; }
+.uso__escena { width: 100%; height: auto; display: block; overflow: visible; }
+
+/* Flujo satélite → terreno → crédito */
+.uso__flujo { fill: none; stroke: url(#uso-flujo); stroke-width: 2; stroke-dasharray: 6 8; opacity: .8; animation: uso-flujo 1.6s linear infinite; }
+.uso__flujo--2 { animation-delay: -.8s; }
+@keyframes uso-flujo { to { stroke-dashoffset: -28; } }
+.uso__nodo circle { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1.5; }
+.uso__nodo { color: var(--s1); }
+.uso__nodo--banco { color: var(--amber); }
+.uso__nodo-texto { fill: var(--muted); font-size: 12px; font-weight: 600; }
+
+/* Terreno */
+.uso__terreno { fill: var(--surface-2); stroke: var(--line-strong); stroke-width: 1.2; }
+.uso__terreno-lado { fill: color-mix(in srgb, var(--surface-3) 70%, #000); opacity: .7; }
+.uso__estado { fill: var(--relleno); fill-opacity: .12; stroke: var(--line-strong); stroke-width: 1; stroke-dasharray: 5 4; transition: fill-opacity .5s ease; }
+.uso__escena--zona .uso__estado { fill-opacity: .55; }
+.uso__punto { stroke: var(--surface-2); stroke-width: .8; }
+
+/* Capas según el caso de uso */
+.uso__capa { opacity: 0; transition: opacity .45s ease; pointer-events: none; }
+.uso__escena--seguro .uso__capa--seguro, .uso__escena--ingreso .uso__capa--ingreso { opacity: 1; }
+.uso__alerta { fill: color-mix(in srgb, var(--danger) 14%, transparent); stroke: var(--danger); stroke-width: 2; stroke-dasharray: 6 5; }
+.uso__escudo circle { fill: var(--surface); stroke: var(--danger); stroke-width: 2; }
+.uso__escudo { color: var(--danger); }
+.uso__anillo { fill: none; stroke: var(--amber); stroke-width: 3; }
+.uso__guia { stroke: var(--amber); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.uso__tarjeta { fill: var(--surface); stroke: var(--amber); stroke-width: 1.5; }
+.uso__tarjeta-t { fill: var(--muted); font-size: 12px; }
+.uso__tarjeta-v { fill: var(--text); font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+
+/* Pines por estado */
+.uso__pin { cursor: pointer; outline: none; }
+.uso__pin-sombra { fill: #0006; }
+.uso__pin-onda { fill: none; stroke: var(--amber); stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: uso-onda 2.4s ease-out infinite; animation-delay: calc(var(--i) * .5s); }
+@keyframes uso-onda { from { transform: scale(.6); opacity: .9; } to { transform: scale(2.4); opacity: 0; } }
+.uso__pin-palo { stroke: var(--amber); stroke-width: 2; }
+.uso__pin-caja { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1.2; transition: stroke .2s ease, fill .2s ease; }
+.uso__pin-nombre { fill: var(--text); font-size: 14px; font-weight: 700; }
+.uso__pin-dato { fill: var(--muted); font-size: 11px; }
+.uso__pin:hover .uso__pin-caja, .uso__pin:focus-visible .uso__pin-caja { stroke: var(--amber); stroke-width: 2; fill: color-mix(in srgb, var(--amber) 12%, var(--surface)); }
+.uso__escena--zona .uso__pin-caja { stroke: color-mix(in srgb, var(--amber) 60%, var(--line-strong)); }
+
+.uso__leyenda { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 8px; color: var(--muted); font-size: var(--fs-xs); }
+.uso__leyenda i { width: 120px; height: 8px; border-radius: 4px; }
+.uso__leyenda small { flex-basis: 100%; color: var(--faint); }
+
+/* Casos de uso */
+.uso__lado { display: grid; gap: 18px; }
+.uso__casos { display: grid; gap: 10px; }
+.uso__caso { display: flex; gap: 14px; align-items: flex-start; width: 100%; padding: 18px; text-align: left; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); color: inherit; cursor: pointer; transition: border-color .25s ease, background-color .25s ease, transform .25s ease; }
+.uso__caso:hover { transform: translateX(4px); }
+.uso__caso.is-activo { border-color: var(--amber); background: color-mix(in srgb, var(--amber) 8%, var(--surface)); box-shadow: var(--shadow); }
+.uso__caso-icono { flex: none; width: 42px; height: 42px; display: grid; place-items: center; border-radius: 12px; background: var(--surface-2); color: var(--muted); transition: background-color .25s, color .25s; }
+.uso__caso.is-activo .uso__caso-icono { background: var(--amber); color: #17130a; }
+:root[data-theme="light"] .uso__caso.is-activo .uso__caso-icono { color: #fff; }
+.uso__caso-texto b { display: block; font-size: var(--fs-lg); }
+.uso__caso-texto small { display: block; margin-top: 6px; color: var(--muted); font-size: var(--fs-sm); line-height: 1.55; }
+.uso__accion { justify-self: start; }
+
+.uso__cta-estados { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
+
+@media (max-width: 1100px) {
+  .uso__grid { grid-template-columns: 1fr; }
+  .uso__cta-estados { justify-content: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .uso__flujo, .uso__pin-onda { animation: none; }
+}
