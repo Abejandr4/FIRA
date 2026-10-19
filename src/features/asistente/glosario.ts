@@ -81,7 +81,7 @@ export const GLOSARIO: Termino[] = [
     definicion: "ETo es la evapotranspiración de referencia (la demanda de agua de la atmósfera); ETa es la evapotranspiración real del cultivo. Cuando la real queda por debajo de la demanda hay déficit hídrico. Son salidas del simulador (exploratorias)." },
   { id: "ingreso", termino: "Ingreso bruto estimado", alias: ["ingreso bruto", "ingreso", "precio por tonelada", "produccion estimada", "produccion"],
     definicion: "Rendimiento estimado × superficie × el precio por tonelada que captures. El rango usa el intervalo al 80 %. No incluye costos y no es una oferta de crédito ni una asesoría financiera." },
-  { id: "quesi", termino: "¿Qué pasaría si…?", alias: ["que pasaria si", "exploracion del modelo"],
+  { id: "quesi", termino: "Sensibilidad de la predicción", alias: ["sensibilidad de la prediccion", "exploracion del modelo"],
     definicion: "Al mover variables satelitales de la parcela se recalcula la corrección. No es un efecto causal, porque en la realidad esas variables se mueven juntas. El efecto es pequeño porque casi toda la predicción viene de la ubicación." },
   { id: "percentil", termino: "Percentil frente al municipio", alias: ["percentil frente al municipio", "diagnostico comparativo", "senales", "percentil"],
     definicion: "Posición de la parcela entre las parcelas de su municipio: 50 es un valor típico y 90 está entre el 10 % más alto. Solo se muestra con 10 o más parcelas en el municipio." },
