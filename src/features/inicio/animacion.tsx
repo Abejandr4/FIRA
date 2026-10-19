@@ -6,7 +6,7 @@
  *  - useTip / TipGrafico: tooltip de las gráficas.
  * Todo respeta prefers-reduced-motion.
  */
-import { useEffect, useRef, useState, type CSSProperties, type FocusEvent, type PointerEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type FocusEvent, type PointerEvent, type ReactNode } from "react";
 import { num } from "../../lib/formato";
 
 export const movimientoReducido = () =>
@@ -67,51 +67,81 @@ export function Contador({ valor, decimales = 0, activo, sufijo = "" }: { valor:
   return <>{num(v, decimales)}{sufijo}</>;
 }
 
-/** Variables CSS de scroll en <html>: --scroll-y (px, sin unidad) y --scroll-p (0–1 de la página). */
-export function useScrollCss() {
+/**
+ * Efectos ligados al scroll, escritos directo en el DOM (sin re-render y sin tocar variables CSS de <html>,
+ * que obligarían al navegador a recalcular los estilos de toda la página en cada cuadro).
+ */
+export function useEfectosScroll() {
   useEffect(() => {
     const raiz = document.documentElement;
-    let raf = 0;
-    const f = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const max = raiz.scrollHeight - raiz.clientHeight;
-        raiz.style.setProperty("--scroll-y", String(window.scrollY));
-        raiz.style.setProperty("--scroll-p", String(max > 0 ? window.scrollY / max : 0));
-      });
+    const barra = document.querySelector<HTMLElement>(".barra-inicio__progreso");
+    const hero = document.querySelector<HTMLElement>(".hero");
+    const ilu = document.querySelector<HTMLElement>(".hero__ilustracion");
+    const reducido = movimientoReducido();
+    let raf = 0, pendiente = false, fuera = false;
+    const pintar = () => {
+      pendiente = false;
+      const y = window.scrollY;
+      const max = raiz.scrollHeight - raiz.clientHeight;
+      if (barra) barra.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`;
+      const alto = hero?.offsetHeight ?? window.innerHeight;
+      const ahoraFuera = y > alto;
+      if (ahoraFuera !== fuera) { fuera = ahoraFuera; hero?.classList.toggle("is-fuera", fuera); }
+      if (ilu && !reducido && !fuera) ilu.style.transform = `translate3d(0, ${(-0.12 * y).toFixed(1)}px, 0)`;
     };
-    f();
+    const f = () => { if (!pendiente) { pendiente = true; raf = requestAnimationFrame(pintar); } };
+    pintar();
     window.addEventListener("scroll", f, { passive: true });
     window.addEventListener("resize", f);
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("scroll", f);
       window.removeEventListener("resize", f);
-      raiz.style.removeProperty("--scroll-y");
-      raiz.style.removeProperty("--scroll-p");
     };
   }, []);
 }
 
-// ---- Tooltip de gráficas
+// ---- Tooltip de gráficas: vive en un almacén propio para no re-renderizar la gráfica al mover el mouse.
 export interface Tip { x: number; y: number; contenido: ReactNode }
+
+export interface AlmacenTip {
+  get: () => Tip | null;
+  set: (t: Tip | null) => void;
+  sub: (f: () => void) => () => void;
+}
+
+function crearAlmacen(): AlmacenTip {
+  let valor: Tip | null = null, raf = 0, siguiente: Tip | null = null;
+  const subs = new Set<() => void>();
+  const avisar = () => subs.forEach((f) => f());
+  return {
+    get: () => valor,
+    set: (t) => {
+      siguiente = t;
+      if (t === null) { cancelAnimationFrame(raf); raf = 0; valor = null; avisar(); return; }
+      if (!raf) raf = requestAnimationFrame(() => { raf = 0; valor = siguiente; avisar(); });
+    },
+    sub: (f) => { subs.add(f); return () => { subs.delete(f); }; },
+  };
+}
 
 export function useTip() {
   const contRef = useRef<HTMLDivElement>(null);
-  const [tip, setTip] = useState<Tip | null>(null);
+  const [tip] = useState(crearAlmacen);
   const mostrar = (e: PointerEvent<Element> | FocusEvent<Element>, contenido: ReactNode) => {
     const c = contRef.current?.getBoundingClientRect();
     if (!c) return;
-    if ("clientX" in e) setTip({ x: e.clientX - c.left, y: e.clientY - c.top, contenido });
+    if ("clientX" in e) tip.set({ x: e.clientX - c.left, y: e.clientY - c.top, contenido });
     else {
       const r = e.currentTarget.getBoundingClientRect();
-      setTip({ x: r.left + r.width / 2 - c.left, y: r.top - c.top, contenido });
+      tip.set({ x: r.left + r.width / 2 - c.left, y: r.top - c.top, contenido });
     }
   };
-  return { contRef, tip, mostrar, ocultar: () => setTip(null) };
+  return { contRef, tip, mostrar, ocultar: () => tip.set(null) };
 }
 
-export function TipGrafico({ tip }: { tip: Tip | null }) {
-  if (!tip) return null;
-  return <div className="g-tip" style={{ left: tip.x, top: tip.y }} role="status">{tip.contenido}</div>;
+export function TipGrafico({ tip }: { tip: AlmacenTip }) {
+  const t = useSyncExternalStore(tip.sub, tip.get);
+  if (!t) return null;
+  return <div className="g-tip" style={{ transform: `translate3d(${t.x}px, ${t.y}px, 0) translate(-50%, calc(-100% - 14px))` }} role="status">{t.contenido}</div>;
 }

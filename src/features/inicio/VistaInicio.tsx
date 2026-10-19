@@ -7,17 +7,19 @@ import type { Ruta } from "../../app/ruta";
 import { Cargando, ErrorDatos, Icon, ThemeToggle } from "../../components/ui";
 import { combinar, useEstadosGeo, useMeta, useModeloRidge, useNdvi, useParcelas } from "../../data/hooks";
 import type { MetaModelo, Parcela } from "../../data/tipos";
-import { movimientoReducido, useScrollCss } from "./animacion";
+import { movimientoReducido, useEfectosScroll } from "./animacion";
 import { resumen } from "./datos";
 import { Cierre } from "./secciones/Cierre";
 import { Hero } from "./secciones/Hero";
 import { SeccionDatos } from "./secciones/SeccionDatos";
 import { SeccionModelo } from "./secciones/SeccionModelo";
 import { SeccionReto } from "./secciones/SeccionReto";
+import { SeccionRueda } from "./secciones/SeccionRueda";
 import { SeccionVariables } from "./secciones/SeccionVariables";
 import "./inicio.css";
 
 const NAV = [
+  { id: "resumen", texto: "Resumen" },
   { id: "reto", texto: "El reto" },
   { id: "datos", texto: "Datos" },
   { id: "modelo", texto: "Modelo" },
@@ -29,7 +31,7 @@ const irA = (id: string) =>
   document.getElementById(id)?.scrollIntoView({ behavior: movimientoReducido() ? "auto" : "smooth", block: "start" });
 
 export function VistaInicio({ navegar }: { navegar: (r: Ruta) => void }) {
-  useScrollCss();
+  useEfectosScroll();
   const base = combinar<[Parcela[], MetaModelo]>(useParcelas(), useMeta());
   const ndvi = useNdvi();
   const ridge = useModeloRidge();
@@ -45,6 +47,7 @@ export function VistaInicio({ navegar }: { navegar: (r: Ruta) => void }) {
         <Hero res={res} parcelas={parcelas} meta={meta} irA={irA} irMapa={() => irMapa()} />
         {base.estado === "listo" && res && parcelas && meta ? (
           <>
+          <SeccionRueda parcelas={parcelas} res={res} meta={meta} ndvi={ndvi.datos} ridge={ridge.datos} irA={irA} />
             <SeccionReto parcelas={parcelas} res={res} />
             <SeccionDatos parcelas={parcelas} res={res} meta={meta} ndvi={ndvi.datos} estadosGeo={geo.datos} />
             <SeccionModelo parcelas={parcelas} res={res} meta={meta} irMapa={irMapa} />

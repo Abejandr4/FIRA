@@ -95,6 +95,7 @@ function BarraDato({ texto, valor, max, acento }: { texto: string; valor: number
 }
 
 // ---- Mapa de puntos
+// ---- Mapa de puntos
 type Modo = "conjunto" | "rendimiento";
 
 function MapaPuntos({ parcelas, res, estadosGeo }: { parcelas: Parcela[]; res: Resumen; estadosGeo?: ColeccionGeo<PropsEstado> }) {
@@ -143,17 +144,20 @@ function MapaPuntos({ parcelas, res, estadosGeo }: { parcelas: Parcela[]; res: R
           <g clipPath="url(#mp-marco)">
             <rect width={W} height={H} className="mapa-puntos__fondo" />
             {g.estados.map((e) => <path key={e.nombre} d={e.d} className="mapa-puntos__estado" />)}
-            {parcelas.map((p, i) => {
-              const [x, y] = g.xy(p.lon, p.lat);
-              const color = modo === "conjunto"
-                ? (p.conjunto === "PREDICCION" ? "var(--amber)" : "var(--s1)")
-                : colorRampa((p.pred - g.lo) / (g.hi - g.lo || 1));
-              return (
-                <circle key={p.id} cx={x} cy={y} r={p.conjunto === "PREDICCION" ? 5.5 : 4.5} className="mapa-punto"
-                  style={{ fill: color, "--i": i } as CSSProperties}
-                  onPointerMove={(ev) => mostrar(ev, <><b>{p.id} · {p.municipio}</b><span>{p.conjunto === "PREDICCION" ? "Por predecir" : `Real ${num(p.real, 2)} t/ha`}</span><span>Estimado {num(p.pred, 2)} t/ha</span></>)} />
-              );
-            })}
+            {/* Un solo grupo que aparece con fundido, en lugar de animar ~200 puntos por separado */}
+            <g className="mapa-puntos__puntos">
+              {parcelas.map((p) => {
+                const [x, y] = g.xy(p.lon, p.lat);
+                const color = modo === "conjunto"
+                  ? (p.conjunto === "PREDICCION" ? "var(--amber)" : "var(--s1)")
+                  : colorRampa((p.pred - g.lo) / (g.hi - g.lo || 1));
+                return (
+                  <circle key={p.id} cx={x} cy={y} r={p.conjunto === "PREDICCION" ? 5.5 : 4.5} className="mapa-punto"
+                    style={{ fill: color }}
+                    onPointerMove={(ev) => mostrar(ev, <><b>{p.id} · {p.municipio}</b><span>{p.conjunto === "PREDICCION" ? "Por predecir" : `Real ${num(p.real, 2)} t/ha`}</span><span>Estimado {num(p.pred, 2)} t/ha</span></>)} />
+                );
+              })}
+            </g>
             <g transform={`translate(${W - 24 - g.km * kmBarra} ${H - 26})`} className="mapa-puntos__escala">
               <rect width={g.km * kmBarra} height="4" rx="2" />
               <text y="-6">{kmBarra} km</text>
@@ -311,6 +315,30 @@ function CurvasNdvi({ ndvi, parcelas, res }: { ndvi: SerieNdvi; parcelas: Parcel
   const meses = ndvi.fechas.map((f, k) => ({ f, k })).filter(({ f }) => Number(f.slice(8, 10)) <= 5);
   const ticksY = [0, 0.2, 0.4, 0.6, 0.8].filter((t) => t < tope);
 
+    // Las curvas no dependen del puntero: se calculan una vez y el cursor solo mueve la cruz.
+  const dibujo = useMemo(() => (
+    <>
+      {bandas.map((b, bi) => {
+            const color = colorEstado(res.estados, b.estado);
+            return (
+              <g key={b.estado} className="ndvi__serie" style={{ "--i": bi } as CSSProperties}>
+                {segmentos(b.p25).map((seg) => {
+                  const ok = seg.filter((k) => b.p75[k] !== null);
+                  if (ok.length < 2) return null;
+                  const d = `M${ok.map((k) => `${x(k)} ${y(b.p75[k] as number)}`).join("L")}L${[...ok].reverse().map((k) => `${x(k)} ${y(b.p25[k] as number)}`).join("L")}Z`;
+                  return <path key={seg[0]} d={d} className="ndvi__banda" style={{ fill: color }} />;
+                })}
+                {segmentos(b.p50).map((seg) => seg.length > 1 && (
+                  <path key={seg[0]} pathLength={1} className="ndvi__linea" style={{ stroke: color }}
+                    d={`M${seg.map((k) => `${x(k).toFixed(1)} ${y(b.p50[k] as number).toFixed(1)}`).join("L")}`} />
+                ))}
+              </g>
+            );
+          })}
+    </>
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [bandas, res.estados, n, tope]);
+
   const mover = (ev: PointerEvent<SVGRectElement>) => {
     const r = ev.currentTarget.getBoundingClientRect();
     const k = Math.round(((ev.clientX - r.left) / r.width) * (n - 1));
@@ -331,23 +359,8 @@ function CurvasNdvi({ ndvi, parcelas, res }: { ndvi: SerieNdvi; parcelas: Parcel
             </g>
           ))}
           {meses.map(({ f, k }) => <text key={f} x={x(k)} y={H - 10} textAnchor="middle" className="eje-texto">{MES_CORTO[Number(f.slice(5, 7)) - 1]}</text>)}
-          {bandas.map((b, bi) => {
-            const color = colorEstado(res.estados, b.estado);
-            return (
-              <g key={b.estado} className="ndvi__serie" style={{ "--i": bi } as CSSProperties}>
-                {segmentos(b.p25).map((seg) => {
-                  const ok = seg.filter((k) => b.p75[k] !== null);
-                  if (ok.length < 2) return null;
-                  const d = `M${ok.map((k) => `${x(k)} ${y(b.p75[k] as number)}`).join("L")}L${[...ok].reverse().map((k) => `${x(k)} ${y(b.p25[k] as number)}`).join("L")}Z`;
-                  return <path key={seg[0]} d={d} className="ndvi__banda" style={{ fill: color }} />;
-                })}
-                {segmentos(b.p50).map((seg) => seg.length > 1 && (
-                  <path key={seg[0]} pathLength={1} className="ndvi__linea" style={{ stroke: color }}
-                    d={`M${seg.map((k) => `${x(k).toFixed(1)} ${y(b.p50[k] as number).toFixed(1)}`).join("L")}`} />
-                ))}
-              </g>
-            );
-          })}
+          {dibujo}
+
           {/* Etiquetas directas al final de cada curva, separadas para que no se encimen */}
           {etiquetasFinales(bandas, x, y).map((e) => (
             <text key={e.estado} x={e.x + 8} y={e.y} dominantBaseline="middle" className="ndvi__etiqueta">{e.estado}</text>
