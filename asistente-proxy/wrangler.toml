@@ -5,4 +5,4 @@ compatibility_date = "2025-06-01"
 [vars]
 # Orígenes exactos (sin ruta ni barra final). Para GitHub Pages: https://Abejandr4.github.io
 ALLOWED_ORIGINS = "https://Abejandr4.github.io,http://localhost:5173"
-MODEL = "google/gemma-4-26b-a4b-it:free"
+MODEL = "minimax/minimax-m3.1-flash:free"

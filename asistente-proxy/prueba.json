@@ -1,1 +1,1 @@
-{"model":"google/gemma-4-26b-a4b-it:free","messages":[{"role":"user","content":"Hola"}],"max_tokens":20}
+{"model":"minimax/minimax-m3.1-flash:free","messages":[{"role":"user","content":"Hola"}],"max_tokens":20}
