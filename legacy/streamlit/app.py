@@ -168,7 +168,7 @@ with tab_mapa:
                       title="Serie temporal Sentinel-2, abril–octubre 2025")
     st.plotly_chart(fig, use_container_width=True)
 
-    # Exploración "qué pasaría si"
+    # Exploración Sensibilidad de la predición
     with st.expander("Explorar el modelo: ¿qué pasaría si cambian las variables de la parcela?"):
         cand = ["ndvi_p95_s2", "ndvi_p05_s2", "gu50_doy_s2", "ndvi_doy_pico_s2", "dias_sobre90_s2"]
         usar = [c for c in cand if c in COLS and parc[c].notna().any()]

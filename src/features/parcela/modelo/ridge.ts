@@ -1,5 +1,5 @@
 /**
- * Corrección satelital del modelo (ridge) evaluada en el navegador, para "¿Qué pasaría si…?".
+ * Corrección satelital del modelo (ridge) evaluada en el navegador, para Sensibilidad de la predición.
  * Fórmula exacta del pipeline de sklearn (SimpleImputer → StandardScaler → RidgeCV):
  *   corr = intercepto + Σ coef_j · (x_j − media_j) / escala_j,   x_j faltante → mediana_j
  * Datos: public/data/modelo/ridge.json (lo genera scripts/exportar_datos.py, que verifica la fórmula

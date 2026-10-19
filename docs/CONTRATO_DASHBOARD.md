@@ -39,7 +39,7 @@ Verificaciones del exportador (se detiene si fallan):
 
 `q80`, `q90` (± t/ha), `cv_aleatorio` (`rmse`, `rmse_prior`, `r2`, `mae`), `cv_espacial` (`rmse`, `rmse_prior`, `r2`), `rmse_media_global`, `media_general_entren` (t/ha), `n_train`, `n_pred`, `n_variables`, `config`, `generado`. Origen: `RC/app_data/meta.json`.
 
-## `modelo/ridge.json` y `modelo/variables.json` ("¿qué pasaría si…?")
+## `modelo/ridge.json` y `modelo/variables.json` (Sensibilidad de la predición)
 
 `ridge.json`: la corrección ridge final ajustada con las 138 parcelas (`ajustar()` de `RC/modelo_lib.py`) como coeficientes: `cols` (34), `medianas` (SimpleImputer), `medias` y `escalas` (StandardScaler), `coef`, `intercepto`, `alpha` (RidgeCV). El navegador calcula `corr = intercepto + Σ coef · (x − media) / escala`, con `x` faltante → mediana. El exportador verifica que la fórmula reproduce `predict()` de sklearn.
 

@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | Territorio (mapa, panel general) | `src/features/territorio/`, `src/components/layout/` | Diana Karen y Yaretzi Abigail |
 | Parcela (tarjeta, rendimiento, Dx, financiero) | `src/features/parcela/` | Diana Karen y Yaretzi Abigail |
-| Asistente | `src/features/asistente/` | Alejandra Valentina |
+| Glosario | `src/features/asistente/` | Alejandra Valentina |
 | Simulador (resultados, explorador, motor) | `src/features/simulador/` excepto `planta/` | Myrahis Yurizahan y Renata |
 | Planta 3D | `src/features/simulador/planta/` | Myrahis Yurizahan y Renata |
 | Datos (exportador y contrato) | `scripts/`, `src/data/`, `docs/CONTRATO_DASHBOARD.md` | Alejandra Valentina |
@@ -23,7 +23,7 @@
 6. **Estilos por feature.** Cada carpeta tiene su `.css`; los colores salen de `src/styles/tokens.css`. Clases nuevas al final de tu archivo, bajo el comentario "Añadidos".
 7. **El simulador no toca la predicción.** Nada en `features/simulador/` lee ni modifica `pred` ni lo financiero.
 8. **Si cambia el simulador de Python** (módulos o `params.yaml`): `npm run datos`, `npm run verificar:motor`, y si falla, actualizar `features/simulador/motor/`.
-   **Si cambia el modelo** (variables, priors o tipo de modelo): `npm run datos` y `npm run verificar:modelo`. Si el modelo deja de ser lineal (p. ej. random forest), "¿qué pasaría si…?" ya no se puede calcular en el navegador y necesitará una API en Python.
+   **Si cambia el modelo** (variables, priors o tipo de modelo): `npm run datos` y `npm run verificar:modelo`. Si el modelo deja de ser lineal (p. ej. random forest), Sensibilidad de la predición ya no se puede calcular en el navegador y necesitará una API en Python.
 9. Antes de abrir PR: `npm run typecheck`.
 
 ## Contratos internos

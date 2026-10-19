@@ -1,6 +1,6 @@
 /**
  * Que si modelo
- * "¿Qué pasaría si…?" del modelo de rendimiento (antes, el expander de la app de Streamlit).
+ * Sensibilidad de la predición del modelo de rendimiento (antes, el expander de la app de Streamlit).
  * Mueve variables satelitales de la parcela y recalcula la predicción en vivo con la fórmula del ridge.
  * Es una exploración del modelo, no un efecto causal. No se enlaza con el simulador ni con lo financiero.
  */

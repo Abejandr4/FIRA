@@ -129,7 +129,7 @@ def exportar_modelo(dir_modelo: Path, salida: Path):
     filas.sort(key=lambda x: x["id"])
     escribir(salida / "parcelas.json", filas)
 
-    # 3. "¿Qué pasaría si…?": corrección ridge final (138 parcelas) exportada como coeficientes.
+    # 3. Sensibilidad de la predición: corrección ridge final (138 parcelas) exportada como coeficientes.
     #    La corrección es lineal: corr = intercepto + Σ coef_j · (x_j − media_j) / escala_j,
     #    con x_j faltante → mediana_j. El navegador la evalúa sin Python.
     final = ajustar(train, cols)
@@ -147,7 +147,7 @@ def exportar_modelo(dir_modelo: Path, salida: Path):
     assert dif < 1e-9, f"La corrección lineal no reproduce sklearn (dif. máx. {dif})"
     dif = np.abs(prior + corr_js(test[cols].to_numpy(float)) - pred).max()
     assert dif < 1e-9, f"prior + corrección lineal no reproduce la predicción (dif. máx. {dif})"
-    print(f"¿Qué pasaría si…?: la fórmula lineal reproduce sklearn (alpha = {ridge.alpha_:.1f})")
+    print(f"Sensibilidad de la predicción: la fórmula lineal reproduce sklearn (alpha = {ridge.alpha_:.1f})")
     escribir(salida / "modelo/ridge.json", modelo_js)
     escribir(salida / "modelo/variables.json", {
         "cols": cols,

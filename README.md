@@ -53,9 +53,9 @@ src/
   features/
     territorio/               mapa y panel territorial
     parcela/                  tarjeta, rendimiento, financiero, NDVI, Dx comparativo
-      QueSiModelo.tsx         "¿qué pasaría si…?" del modelo, en vivo
+      QueSiModelo.tsx         Sensibilidad de la predición del modelo, en vivo
       modelo/ridge.ts         corrección ridge evaluada en el navegador
-    asistente/                chat
+    asistente/                glosario
     simulador/
       resultados/             12 tarjetas, lecturas, sensibilidad, advertencias
       explorador/             fecha de siembra observada, línea de tiempo
@@ -83,7 +83,7 @@ Ver [CONTRIBUTING.md](CONTRIBUTING.md): quién es responsable de cada carpeta, r
 | Simulador · Explorador | Conectado; recalcula en el navegador con el motor TS |
 | Simulador · Escenarios hipotéticos | Conectado; precipitación, periodo sin lluvia, riego, ciclo de variedad y fecha de siembra |
 | Planta | 3D migrada; esquema 2D como respaldo sin WebGL |
-| Parcela · ¿qué pasaría si…? | Conectado; recalcula la predicción en vivo con los coeficientes del ridge |
+| Parcela · Sensibilidad de la predición | Conectado; recalcula la predicción en vivo con los coeficientes del ridge |
 | Parcela | Identificación, confianza y financiero conectados; resto con relleno `XX,X` y `TODO(parcela)` |
 | Territorio | Relleno del diseño; mapa real pendiente (`TODO(territorio)`) |
 | Asistente | Interacción de ejemplo (`TODO(asistente)`) |
