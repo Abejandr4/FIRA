@@ -1,6 +1,7 @@
 /**
  * Escenarios hipotéticos: clima y manejo modificados sobre el escenario en uso (estimado o con fecha observada).
  * Exploratorio. No cambia la predicción del modelo ni lo financiero.
+ * Los controles modificados y las variables que cambian se resaltan (clases esc-control--activo y esc-fila-cambio).
  */
 import { useMemo, useState } from "react";
 import { Button, Icon, Label, SegmentedControl, Tooltip } from "../../../components/ui";
@@ -12,6 +13,9 @@ import {
   aplicarClima, escenarioNeutro, esNeutro, FACTOR_VARIEDAD, lluviaCiclo, simularEscenario, validar,
   type Escenario, type Variedad,
 } from "./escenario";
+
+/** Clase del control: se resalta cuando su valor difiere del escenario en uso. */
+const claseControl = (modificado: boolean) => `esc-control${modificado ? " esc-control--activo" : ""}`;
 
 export function EscenariosHipoteticos({ entrada, params, fila, base }: {
   entrada: EntradaDiaria;
@@ -49,14 +53,14 @@ export function EscenariosHipoteticos({ entrada, params, fila, base }: {
       </p>
 
       <div className="esc-controles">
-        <div className="esc-control">
+        <div className={claseControl(esc.fechaSiembra !== base.fecha_siembra)}>
           <label htmlFor="esc-siembra"><strong>Fecha de siembra</strong></label>
           <input id="esc-siembra" type="date" value={esc.fechaSiembra} min={params.ventana.inicio} max={params.ventana.fin}
             aria-invalid={!!errores.siembra} onChange={(e) => set("fechaSiembra", e.target.value)} />
           {errores.siembra && <small className="field-error">{errores.siembra}</small>}
         </div>
 
-        <div className="esc-control">
+        <div className={claseControl(esc.variedad !== "intermedia")}>
           <div className="esc-control-head"><strong>Ciclo de la variedad</strong>
             <Tooltip text="Escala los grados-día objetivo de antesis y madurez (±10 %). Es un supuesto de interfaz, no una calibración por variedad." /></div>
           <SegmentedControl small label="Ciclo de la variedad" value={esc.variedad} onChange={(v: Variedad) => set("variedad", v)}
@@ -64,14 +68,14 @@ export function EscenariosHipoteticos({ entrada, params, fila, base }: {
           <small>Antesis / madurez: {gdd(FACTOR_VARIEDAD[esc.variedad])}{esc.variedad === "intermedia" && " (caso base)"}</small>
         </div>
 
-        <div className="esc-control">
+        <div className={claseControl(esc.lluviaPct !== 0)}>
           <label htmlFor="esc-lluvia"><strong>Precipitación del ciclo</strong></label>
           <input id="esc-lluvia" type="range" min={-80} max={80} step={10} value={esc.lluviaPct}
             onChange={(e) => set("lluviaPct", Number(e.target.value))} />
           <small>{esc.lluviaPct === 0 ? "Sin cambio" : pct(esc.lluviaPct, 0)} · {num(lluviaEsc, 0)} mm en el ciclo (en uso: {num(lluviaBase, 0)} mm)</small>
         </div>
 
-        <div className="esc-control">
+        <div className={claseControl(esc.periodoSeco.activo)}>
           <label className="esc-check"><input type="checkbox" checked={esc.periodoSeco.activo}
             onChange={(e) => set("periodoSeco", { ...esc.periodoSeco, activo: e.target.checked })} /><strong>Periodo sin lluvia</strong></label>
           <div className="esc-fila" aria-disabled={!esc.periodoSeco.activo}>
@@ -83,7 +87,7 @@ export function EscenariosHipoteticos({ entrada, params, fila, base }: {
           {errores.seco && <small className="field-error">{errores.seco}</small>}
         </div>
 
-        <div className="esc-control">
+        <div className={claseControl(esc.riego.activo)}>
           <label className="esc-check"><input type="checkbox" checked={esc.riego.activo}
             onChange={(e) => set("riego", { ...esc.riego, activo: e.target.checked })} /><strong>Riego de auxilio</strong></label>
           <div className="esc-fila" aria-disabled={!esc.riego.activo}>
@@ -120,12 +124,13 @@ function ComparacionEscenario({ base, esc, entrada }: { base: ResultadoSimulacio
           {TODAS.map((m) => {
             const a = base.variables[m.columna], b = esc.variables[m.columna];
             const v = a !== 0 ? (100 * (b - a)) / Math.abs(a) : 0;
+            const cambia = Math.abs(v) >= 0.05;
             return (
-              <tr key={m.columna}>
+              <tr key={m.columna} className={cambia ? "esc-fila-cambio" : ""}>
                 <th scope="row">{m.nombre}<small>{m.columna}</small></th>
                 <td>{num(a, m.decimales)} {m.unidad}</td>
                 <td>{num(b, m.decimales)} {m.unidad}</td>
-                <td className={Math.abs(v) >= 0.05 ? "esc-cambio" : ""}>{Math.abs(v) < 0.05 ? "sin cambio" : pct(v)}</td>
+                <td className={cambia ? "esc-cambio" : ""}>{cambia ? pct(v) : "sin cambio"}</td>
               </tr>
             );
           })}

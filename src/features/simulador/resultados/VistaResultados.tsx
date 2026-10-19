@@ -8,8 +8,15 @@ import type { Variables12 } from "../motor/tipos";
 import type { Escenario } from "../useEscenario";
 import { GraficoSensibilidad } from "./GraficoSensibilidad";
 import { lecturaGrupo } from "./lecturas";
-import { GRUPOS, OTRAS_SALIDAS, TODAS } from "./metricas";
+import { GRUPOS, OTRAS_SALIDAS, TODAS, type GrupoMetricas } from "./metricas";
 import { TarjetaMetrica } from "./TarjetaMetrica";
+
+/** Variable que se muestra en grande en cada grupo (la más relevante para leer el rendimiento). */
+const DESTACADA: Record<GrupoMetricas["id"], keyof Variables12> = {
+  fenologia: "DAP_antesis_est",
+  agua: "KS_prom_llenado",
+  luz: "Biomasa_Total_Sim",
+};
 
 export function VistaResultados({ escenario, todas, fila, sensibilidad }: {
   escenario: Escenario;
@@ -40,20 +47,29 @@ export function VistaResultados({ escenario, todas, fila, sensibilidad }: {
         <div><Label>{conBase ? "ESCENARIO CON FECHA INGRESADA" : "ESCENARIO BASE"}</Label><div className="page-title">Variables biofísicas simuladas</div></div>
         <span className="neutral-badge"><Icon name="calendar" size={15} /> {conBase ? "Fecha de siembra ingresada" : "Fecha estimada con satélite"}</span>
       </div>
-      {GRUPOS.map((g, gi) => (
-        <section className="metric-group" key={g.id} aria-labelledby={`grupo-${g.id}`}>
-          <div className="group-heading">
-            <div><span>0{gi + 1}</span><strong id={`grupo-${g.id}`}>{g.titulo}</strong><em>{g.pregunta}</em></div>
-            <p>{lecturaGrupo(g.id, v, pcts)}</p>
-          </div>
-          <div className={`metric-grid metric-grid-${g.metricas.length}`}>
-            {g.metricas.map((m) => (
-              <TarjetaMetrica key={m.columna} def={m} valor={v[m.columna]} percentil={pcts[m.columna]} nParcelas={todas.length}
-                base={conBase ? escenario.base.variables[m.columna] : undefined} casiConstante={estadistica[m.columna].casiConstante} />
-            ))}
-          </div>
-        </section>
-      ))}
+      {GRUPOS.map((g, gi) => {
+        // La destacada va primero para que ocupe la celda grande del mosaico.
+        const metricas = [...g.metricas].sort((a, b) => Number(b.columna === DESTACADA[g.id]) - Number(a.columna === DESTACADA[g.id]));
+        return (
+          <section className="metric-group" key={g.id} aria-labelledby={`grupo-${g.id}`}>
+            <div className="group-heading">
+              <div><span>0{gi + 1}</span><strong id={`grupo-${g.id}`}>{g.titulo}</strong><em>{g.pregunta}</em></div>
+            </div>
+            <div className={`metric-grid bento bento-${g.metricas.length}`}>
+              {metricas.map((m, i) => {
+                const grande = m.columna === DESTACADA[g.id];
+                return (
+                  <div key={m.columna} className="bento__celda" style={{ animationDelay: `${i * 60}ms` }}>
+                    <TarjetaMetrica def={m} valor={v[m.columna]} percentil={pcts[m.columna]} nParcelas={todas.length}
+                      base={conBase ? escenario.base.variables[m.columna] : undefined} casiConstante={estadistica[m.columna].casiConstante}
+                      destacada={grande} lectura={grande ? lecturaGrupo(g.id, v, pcts) : undefined} />
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
 
       <details className="other-outputs">
         <summary>Otras salidas del simulador <span>{OTRAS_SALIDAS.length} variables · escenario base</span></summary>
