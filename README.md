@@ -1,6 +1,6 @@
 # AgroCebada · Dashboard del Reto FIRA 2026
 
-Dashboard de la predicción de rendimiento de cebada (t/ha) en 197 parcelas de Hidalgo, Puebla y Tlaxcala, y del simulador biofísico exploratorio. Diseño: archivo de Figma Make *Dashboard Reto AgroCebada 2026*.
+Dashboard de la predicción de rendimiento de cebada (t/ha) en 197 parcelas de Hidalgo, Puebla y Tlaxcala, y del simulador biofísico exploratorio. 
 
 Este repo es solo la interfaz. Los datos vienen de los otros dos repos del equipo:
 
@@ -47,7 +47,7 @@ src/
   app/ruta.ts                 navegación por hash (#/parcela/AGC_011, #/simulador/AGC_011/explorador)
   data/                       contrato (tipos.ts), carga y hooks — única puerta a los datos
   lib/                        formato de números y fechas, percentiles
-  styles/                     tokens de color y base (de Figma)
+  styles/                     tokens de color y base
   components/ui/              Icon, Button, Tooltip, SegmentedControl, Cargando, ErrorDatos
   components/layout/          barra superior y buscador
   features/

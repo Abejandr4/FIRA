@@ -16,7 +16,7 @@ export function Topbar({ ruta, navegar, parcelas }: {
       {/* La marca regresa a la página de inicio */}
       <button type="button" className="brand brand--boton" onClick={() => navegar({ vista: "inicio" })} aria-label="Ir al inicio">
         <span className="brand-mark"><Icon name="leaf" size={19} /></span>
-        <div><strong>AgroCebada</strong><small>FIRA · Reto 2026</small></div>
+        <div><strong>AgroCebada</strong><small>La Orden del Cereal · Reto 2026</small></div>
       </button>
       <nav className="breadcrumbs" aria-label="Ruta">
         <button type="button" onClick={() => navegar({ vista: "inicio" })}>Inicio</button>

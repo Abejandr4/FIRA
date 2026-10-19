@@ -93,7 +93,7 @@ function BarraInicio({ irMapa, listo }: { irMapa: () => void; listo: boolean }) 
       <div className="contenedor barra-inicio__fila">
         <button type="button" className="marca" onClick={() => irA("inicio")}>
           <span className="brand-mark"><Icon name="leaf" size={19} /></span>
-          <span><strong>AgroCebada</strong><small>FIRA · Reto 2026</small></span>
+          <span><strong>AgroCebada</strong><small>La Orden del Cereal · Reto 2026</small></span>
         </button>
         <nav className="barra-inicio__nav" aria-label="Secciones">
           {NAV.map((n) => (

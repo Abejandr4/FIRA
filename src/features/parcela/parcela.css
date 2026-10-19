@@ -1,4 +1,4 @@
-/* Generado a partir del index.css de Figma Make (Dashboard Reto AgroCebada 2026). */
+
 .summary { color: #b9c0c0; font-size: var(--fs-md); line-height: 1.65; padding: 13px 0 17px; margin: 0; }
 .summary b { color: var(--text); }
 .hero-metric { background: var(--amber-soft); border: 1px solid #57471f; border-radius: var(--radius); padding: 14px; }
@@ -68,14 +68,13 @@
 .signal { display: grid; grid-template-columns: 25px 1fr; gap: 8px; padding: 14px 0; border-top: 1px solid var(--line); }
 .signal > span { color: var(--amber); font-size: var(--fs-sm); }
 .signal p { margin: 0; color: #bec5c3; font-size: var(--fs-base); line-height: 1.55; }
-.disclaimer { display: flex; gap: 8px; margin-top: 16px; padding: 12px; background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); font-size: var(--fs-sm); line-height: 1.5; }
+.disclaimer { display: flex; align-items: flex-start; gap: 10px; margin: 16px 0; padding: 12px 14px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); color: var(--muted); font-size: var(--fs-sm); line-height: 1.5; }
 .disclaimer svg { flex: none; }
 
 @media (max-width: 1100px) {
   .parcel-card { width: 350px; right: 15px; }
 }
 
-/* ---- Añadidos al diseño de Figma ---- */
 .badge-con-tooltip { display: inline-flex; align-items: center; gap: 2px; }
 .finance-fuente { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
 .finance-result small { font-size: var(--fs-xs); color: var(--faint); }
@@ -101,3 +100,7 @@
 .quesi-var input[type="range"] { width: 100%; margin: 8px 0 4px; accent-color: var(--amber); }
 .quesi-var-valores { display: flex; justify-content: space-between; font-size: var(--fs-sm); }
 .quesi-var-valores small { color: var(--faint); font-size: var(--fs-xs); }
+
+.card-head-acciones { display: flex; align-items: center; gap: 8px; flex: none; }
+.parcel-card .icon-button { border-radius: 999px; color: var(--muted); }
+.parcel-card .icon-button:hover { color: var(--amber); border-color: var(--amber); }

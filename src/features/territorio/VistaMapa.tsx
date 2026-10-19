@@ -71,7 +71,8 @@ export function VistaMapa({ ruta, navegar }: { ruta: Extract<Ruta, { vista: "map
             <div className="map-hint" role="alert"><Icon name="warning" size={17} /> No existe la parcela “{ruta.parcela}”</div>
           )}
           {parcela && (
-            <TarjetaParcela parcela={parcela} delMunicipio={delMunicipio} onDx={() => setCajon("dx")} onSimulador={abrirSimulador} />
+              <TarjetaParcela parcela={parcela} delMunicipio={delMunicipio} onDx={() => setCajon("dx")} onSimulador={abrirSimulador}
+              onCerrar={() => navegar({ vista: "mapa", estado: parcela.estado })} />
           )}
           {parcela && cajon === "dx" && (
             <PanelDx parcela={parcela} delMunicipio={delMunicipio} onCerrar={() => setCajon(null)} />

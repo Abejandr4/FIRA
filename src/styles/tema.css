@@ -61,10 +61,10 @@ body { transition: background-color .35s ease; }
 @media (prefers-reduced-motion: reduce) { .tema-toggle__perilla { transition: none; } }
 
 /* ---- Topbar del mapa: columna extra para el interruptor y marca como botón ---- */
-.topbar { grid-template-columns: 250px 1fr minmax(270px, 340px) auto auto; }
+header.topbar { grid-template-columns: 250px 1fr minmax(270px, 340px) auto auto; }
 .brand--boton { border: 0; background: none; padding: 0; text-align: left; cursor: pointer; color: inherit; }
 .brand--boton:hover strong { color: var(--amber); }
-@media (max-width: 1100px) { .topbar { grid-template-columns: 210px 1fr 260px auto; } }
+@media (max-width: 1100px) { header.topbar { grid-template-columns: 210px 1fr 260px auto; } }
 
 /* ---- Tema claro: colores que estaban escritos a mano en los CSS de cada feature ---- */
 :root[data-theme="light"] .topbar,
@@ -102,3 +102,62 @@ body { transition: background-color .35s ease; }
 :root[data-theme="light"] .date-input input,
 :root[data-theme="light"] .esc-control input[type="date"],
 :root[data-theme="light"] .esc-control input[type="number"] { color-scheme: light; }
+:root[data-theme="light"] .gradient-key { background: linear-gradient(90deg, #b9d9ce, #2f7f6c); }
+
+/* ===== Mapa con la estética de la página de inicio ===== */
+.app-shell { --r-card: 18px; }
+
+/* Barra superior como la de inicio: vidrio y buscador en píldora */
+.app-shell .topbar { background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.app-shell .brand-mark { border-radius: 9px; }
+.app-shell .search { border-radius: 999px; padding: 0 14px; }
+
+/* Paneles flotantes: esquinas de 18px, vidrio y sombra suave */
+.app-shell .map-legend,
+.app-shell .map-capas,
+.app-shell .globe-tooltip,
+.app-shell .globe-aviso {
+  border-radius: var(--r-card); background: var(--glass); border-color: var(--line);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: var(--shadow);
+}
+.app-shell .parcel-card { border-radius: var(--r-card); padding: 20px; box-shadow: var(--shadow); }
+.app-shell .map-hint {
+  border-radius: 999px; padding: 10px 18px; background: var(--glass); border-color: var(--line);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: var(--shadow);
+}
+
+/* Controles y botones del mapa como los botones de inicio */
+.app-shell .map-controls { border-radius: 14px; border-color: var(--line); background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: var(--shadow); }
+.app-shell .map-controls button { background: transparent; }
+.app-shell .globe-action {
+  min-height: 40px; padding: 0 18px; font-weight: 600; background: var(--glass); border-color: var(--line-strong);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.app-shell .globe-action:hover { transform: translateY(-2px); border-color: var(--amber); box-shadow: 0 8px 22px #0003; }
+.app-shell .globe-action--primary { background: var(--amber); border-color: var(--amber); color: #17130a; }
+:root[data-theme="light"] .app-shell .globe-action--primary { color: #fff; }
+.app-shell .chat-fab { transition: transform .2s ease, background-color .2s ease; }
+.app-shell .chat-fab:hover { transform: translateY(-2px); }
+
+/* Encabezados: etiqueta en ámbar y títulos con la letra de los títulos de inicio */
+.app-shell .eyebrow { color: var(--amber); font-weight: 600; letter-spacing: .14em; }
+.app-shell .panel-title, .app-shell .card-title { font-family: var(--font-display); letter-spacing: -.01em; }
+
+/* Panel derecho: cajas con las mismas esquinas que las tarjetas de inicio */
+.app-shell .model-note, .app-shell .hero-metric { border-radius: var(--r-card); }
+
+/* Resplandor ámbar y verde del hero sobre el mapa (no bloquea clics) */
+.app-shell .globe-wrap::after {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    radial-gradient(55% 45% at 90% 5%, color-mix(in srgb, var(--amber) 12%, transparent), transparent 70%),
+    radial-gradient(45% 40% at 0% 100%, color-mix(in srgb, var(--s1) 14%, transparent), transparent 70%);
+}
+.app-shell .map-legend, .app-shell .map-hint { z-index: 2; }
+
+.app-shell .brand-mark, .simulator .brand-mark { background: linear-gradient(135deg, var(--amber), var(--s1) 85%); color: #fff; }
+
+/* Marca de la barra superior: subtítulo en una sola línea */
+.app-shell .brand small, .simulator .brand small { font-size: 11px; letter-spacing: .12em; white-space: nowrap; }
+header.topbar { grid-template-columns: 290px 1fr minmax(270px, 340px) auto auto; }

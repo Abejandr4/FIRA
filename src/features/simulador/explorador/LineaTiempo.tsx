@@ -65,8 +65,10 @@ export function LineaTiempo({ resultado: r, entrada, dia, setDia, reproduciendo,
       <input className="timeline-range" type="range" min={ini} max={fin} value={Math.min(Math.max(dia, ini), fin)}
         aria-label="Fecha de simulación" onChange={(e) => { setReproduciendo(false); setDia(Number(e.target.value)); }} />
 
-      <MiniSerie titulo="Tiempo térmico" valor={termico} ys={series.termico} cursor={cursor} clase="termico" />
-      <MiniSerie titulo="Agua en el suelo" valor={agua} ys={series.agua} cursor={cursor} clase="agua" />
+      <div className="mini-series">
+        <MiniSerie titulo="Tiempo térmico" valor={termico} ys={series.termico} cursor={cursor} clase="termico" />
+        <MiniSerie titulo="Agua en el suelo" valor={agua} ys={series.agua} cursor={cursor} clase="agua" />
+      </div>
     </div>
   );
 }

@@ -163,7 +163,7 @@ export function Cierre({ res, meta, parcelas, estadosGeo, navegar }: {
         <footer className="pie">
           <span><Icon name="leaf" size={15} /> AgroCebada · Reto FIRA 2026</span>
           <span>Datos generados el {fechaLarga(meta.generado)} · {meta.fuente}</span>
-          <span>Las cifras de comparación de variantes provienen del reporte técnico del equipo.</span>
+          <span>Desarrollado por el equipo La Orden del Cereal</span>
         </footer>
       </div>
     </section>

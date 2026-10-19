@@ -63,7 +63,13 @@
 .pildora__punto::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--amber); animation: latido 2s ease-out infinite; }
 @keyframes latido { from { transform: scale(1); opacity: .6; } to { transform: scale(3.2); opacity: 0; } }
 .hero__titulo { margin-top: 22px !important; font-family: var(--font-display); font-weight: 600; font-size: clamp(40px, 5.4vw, 72px); line-height: 1.02; letter-spacing: -.02em; text-wrap: balance; }
-.hero__titulo em { font-style: italic; background: linear-gradient(100deg, var(--amber), var(--s1) 70%); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: .06em; }
+.hero__titulo em {
+  font-style: italic;
+  background: linear-gradient(100deg, var(--amber), var(--s1) 70%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  padding: 0 .12em 0 .08em; margin: 0 -.06em 0 -.04em;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
 .hero__lead { margin-top: 22px !important; max-width: 560px; font-size: 19px; line-height: 1.6; color: var(--muted); }
 .hero__lead b { color: var(--text); }
 .hero__acciones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
@@ -116,7 +122,7 @@
 .chip-flotante--3 { bottom: -4%; left: 10%; animation-delay: -4s; }
 @keyframes flota { from { transform: translateY(-6px); } to { transform: translateY(6px); } }
 
-.hero__stats { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 72px; }
+.inicio .hero__stats { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 72px; }
 .stat { display: grid; gap: 4px; align-content: start; padding: 20px; border-radius: var(--r-card); border: 1px solid var(--line); background: var(--glass); transition: transform .25s ease, border-color .25s ease; }
 .stat:hover { transform: translateY(-4px); border-color: var(--line-strong); }
 .stat > svg { color: var(--amber); margin-bottom: 8px; }
@@ -501,3 +507,6 @@
   .inicio *, .inicio *::before, .inicio *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; transition-delay: 0ms !important; }
   .hero__ilustracion { transform: none; }
 }
+
+/* Logo con el degradado del título */
+.inicio .brand-mark { background: linear-gradient(135deg, var(--amber), var(--s1) 85%); color: #fff; }

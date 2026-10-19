@@ -1,5 +1,5 @@
 /**
- * Planta esquemática 2D (ilustración del diseño de Figma) con las mismas variantes que la 3D.
+ * Planta esquemática 2D con las mismas variantes que la 3D.
  * Se usa cuando el navegador no tiene WebGL o mientras carga la escena 3D.
  */
 import type { EstadoPlanta } from "./tipos";

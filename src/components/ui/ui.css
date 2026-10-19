@@ -1,4 +1,4 @@
-/* Generado a partir del index.css de Figma Make (Dashboard Reto AgroCebada 2026). */
+
 button, input { font: inherit; }
 button { color: inherit; }
 button:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
@@ -34,7 +34,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px 
 .segmented.small { height: 30px; }
 .neutral-badge { display: flex; align-items: center; gap: 6px; }
 
-/* ---- Añadidos al diseño de Figma: estados de carga y error, accesibilidad ---- */
+
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .estado-carga { display: grid; gap: 9px; padding: 14px 0; }
 .estado-carga i { display: block; height: 10px; border-radius: 3px; background: linear-gradient(90deg, var(--surface-2), var(--surface-3), var(--surface-2)); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; }

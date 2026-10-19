@@ -1,4 +1,4 @@
-/* Generado a partir del index.css de Figma Make (Dashboard Reto AgroCebada 2026). */
+
 :root {
   color-scheme: dark;
   --bg: #0b0e11;
@@ -16,8 +16,6 @@
   --teal-dark: #28564f;
   --danger: #d9766a;
   --radius: 7px;
-  /* Escala tipográfica. Figma Make la dejó entre 7 y 10 px; se subió para legibilidad.
-     Para agrandar o achicar TODO el dashboard, cambia estos valores. (Original de Figma entre paréntesis.) */
   --fs-micro: 13px;   /* (7)  notas mínimas, nombres de columna */
   --fs-xs: 13px;      /* (8)  etiquetas, leyendas, captions */
   --fs-sm: 14px;      /* (9)  texto secundario */

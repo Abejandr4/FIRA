@@ -1,4 +1,4 @@
-/* Generado a partir del index.css de Figma Make (Dashboard Reto AgroCebada 2026). */
+
 .topbar { height: 68px; display: grid; grid-template-columns: 250px 1fr minmax(270px, 340px) auto; align-items: center; gap: 22px; padding: 0 22px; border-bottom: 1px solid var(--line); background: #0d1114; position: relative; z-index: 20; }
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; color: #15120b; background: var(--amber); border-radius: var(--radius); }

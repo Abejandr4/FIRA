@@ -4,12 +4,12 @@
 
 | Área | Carpeta | Responsable |
 | --- | --- | --- |
-| Territorio (mapa, panel general) | `src/features/territorio/`, `src/components/layout/` | Diana y Yare |
-| Parcela (tarjeta, rendimiento, Dx, financiero) | `src/features/parcela/` | Diana y Yare |
-| Asistente | `src/features/asistente/` | Ale |
-| Simulador (resultados, explorador, motor) | `src/features/simulador/` excepto `planta/` | Mimi y Ren |
-| Planta 3D | `src/features/simulador/planta/` | Mimi y Ren |
-| Datos (exportador y contrato) | `scripts/`, `src/data/`, `docs/CONTRATO_DASHBOARD.md` | Ale |
+| Territorio (mapa, panel general) | `src/features/territorio/`, `src/components/layout/` | Diana Karen y Yaretzi Abigail |
+| Parcela (tarjeta, rendimiento, Dx, financiero) | `src/features/parcela/` | Diana Karen y Yaretzi Abigail |
+| Asistente | `src/features/asistente/` | Alejandra Valentina |
+| Simulador (resultados, explorador, motor) | `src/features/simulador/` excepto `planta/` | Myrahis Yurizahan y Renata |
+| Planta 3D | `src/features/simulador/planta/` | Myrahis Yurizahan y Renata |
+| Datos (exportador y contrato) | `scripts/`, `src/data/`, `docs/CONTRATO_DASHBOARD.md` | Alejandra Valentina |
 
 **Zonas compartidas** (cambios solo por PR con revisión de otra persona): `src/components/ui/`, `src/styles/`, `src/lib/`, `src/data/tipos.ts`, `package.json`.
 

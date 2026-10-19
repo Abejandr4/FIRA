@@ -7,7 +7,8 @@
  * "atrás" del navegador y los enlaces directos funcionan igual que un clic.
  *
  * Controles (esquina superior izquierda): acercar, alejar y menú de capas (mapa base, parcelas,
- * nombres de estados y modo noche).
+ * nombres de estados y modo noche). El mapa sigue al tema del dashboard: teselas claras en modo claro,
+ * oscuras en modo oscuro (el modo noche siempre usa las oscuras).
  *
  * Datos (solo por src/data/hooks.ts): parcelas.json (pred, lat, lon), parcelas.geojson y estados.geojson.
  * Los colores de MapLibre no leen variables CSS; los literales de abajo salen de src/styles/tokens.css.
@@ -16,6 +17,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import type { ExpressionSpecification, GeoJSONSourceSpecification, StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { useTema, type Tema } from "../../app/tema";
 import { Icon } from "../../components/ui";
 import { useEstadosGeo, useParcelasGeo } from "../../data/hooks";
 import type { ColeccionGeo, Parcela, PropsEstado, PropsParcelaGeo } from "../../data/tipos";
@@ -28,6 +30,7 @@ const COLOR_ALTO = "#65a998";
 const COLOR_SIN_DATO = "#3a444b";              // --line-strong
 /** Mapas base sin llave (Esri). */
 const TESELAS = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+const TESELAS_CLARO = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}";
 const TESELAS_SATELITE = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
 const VISTA = { center: [-98.6, 19.9] as [number, number], zoom: 4.8 };
 const ZOOM_PARCELA = 14;
@@ -42,18 +45,29 @@ const ESTILO: StyleSpecification = {
   version: 8,
   sources: {
     base: { type: "raster", tiles: [TESELAS], tileSize: 256, maxzoom: 16 },
+    baseClaro: { type: "raster", tiles: [TESELAS_CLARO], tileSize: 256, maxzoom: 16 },
     satelite: { type: "raster", tiles: [TESELAS_SATELITE], tileSize: 256, maxzoom: 18 },
   },
   layers: [
     { id: "fondo", type: "background", paint: { "background-color": "#0e1519" } },
     { id: "base", type: "raster", source: "base" },
+    { id: "base-claro", type: "raster", source: "baseClaro", layout: { visibility: "none" } },
     { id: "satelite", type: "raster", source: "satelite", layout: { visibility: "none" } },
   ],
 };
 
 const CAPAS_PARCELAS = ["parcelas-poligonos", "parcelas-borde", "parcelas-puntos"];
 
-const cielo = (modoNoche: boolean) => modoNoche ? {
+/** Colores del mapa en tema claro (los de tema oscuro son las constantes de arriba). */
+const CLARO = {
+  fondo: "#e4e2db", bajo: "#b9d9ce", alto: "#2f7f6c", sinDato: "#d6d2c6", borde: "#6c7b80",
+};
+
+const cielo = (modoNoche: boolean, claro = false) => claro && !modoNoche ? {
+  "sky-color": "#a9c8e8", "horizon-color": "#ffffff", "fog-color": "#f5f3ed",
+  "sky-horizon-blend": 0.6, "horizon-fog-blend": 0.5, "fog-ground-blend": 0.2,
+  "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 5, 1, 7, 0] as ExpressionSpecification,
+} : modoNoche ? {
   "sky-color": "#071326", "horizon-color": "#245b91", "fog-color": "#03070d",
   "sky-horizon-blend": 0.7, "horizon-fog-blend": 0.55, "fog-ground-blend": 0.22,
   "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 5, 1, 7, 0] as ExpressionSpecification,
@@ -173,12 +187,14 @@ const rampa = (prop: string, lo: number, hi: number): ExpressionSpecification =>
   ["interpolate", ["linear"], ["get", prop], lo, COLOR_BAJO, hi > lo ? hi : lo + 1e-6, COLOR_ALTO],
 ];
 
-function aplicarModoNoche(map: maplibregl.Map, datos: Datos, modoNoche: boolean) {
+function aplicarModoNoche(map: maplibregl.Map, datos: Datos, modoNoche: boolean, tema: Tema) {
   if (!map.getLayer("estados-relleno")) return;
-  const bajo = modoNoche ? "#063c2b" : COLOR_BAJO;
-  const alto = modoNoche ? "#52e29a" : COLOR_ALTO;
-  const sinDato = modoNoche ? "#164d3b" : COLOR_SIN_DATO;
+  const claro = tema === "light" && !modoNoche;
+  const bajo = modoNoche ? "#063c2b" : claro ? CLARO.bajo : COLOR_BAJO;
+  const alto = modoNoche ? "#52e29a" : claro ? CLARO.alto : COLOR_ALTO;
+  const sinDato = modoNoche ? "#164d3b" : claro ? CLARO.sinDato : COLOR_SIN_DATO;
   const [lo, hi] = datos.rangoEstados;
+  map.setPaintProperty("fondo", "background-color", claro ? CLARO.fondo : "#0e1519");
   map.setPaintProperty("base", "raster-opacity", modoNoche ? 0.28 : 1);
   map.setPaintProperty("satelite", "raster-opacity", modoNoche ? 0.35 : 1);
   map.setPaintProperty("estados-relleno", "fill-color", [
@@ -186,16 +202,27 @@ function aplicarModoNoche(map: maplibregl.Map, datos: Datos, modoNoche: boolean)
     ["interpolate", ["linear"], ["get", "media"], lo, bajo, hi > lo ? hi : lo + 1e-6, alto],
   ]);
   map.setPaintProperty("estados-borde", "line-color", [
-    "case", ["boolean", ["feature-state", "hover"], false], AMBAR, modoNoche ? "#8dffd0" : "#9fb0b5",
+    "case", ["boolean", ["feature-state", "hover"], false], AMBAR, modoNoche ? "#8dffd0" : claro ? CLARO.borde : "#9fb0b5",
   ]);
+    // Parcelas con la misma rampa que la leyenda: en claro va de claro (bajo) a oscuro (alto).
+  if (map.getLayer("parcelas-poligonos")) {
+    const [plo, phi] = datos.rangoPred;
+    const rampaParcelas: ExpressionSpecification = [
+      "case", ["==", ["get", "pred"], null], claro ? CLARO.sinDato : COLOR_SIN_DATO,
+      ["interpolate", ["linear"], ["get", "pred"], plo, claro ? CLARO.bajo : COLOR_BAJO, phi > plo ? phi : plo + 1e-6, claro ? CLARO.alto : COLOR_ALTO],
+    ];
+    map.setPaintProperty("parcelas-poligonos", "fill-color", rampaParcelas);
+    map.setPaintProperty("parcelas-puntos", "circle-color", rampaParcelas);
+  }
 }
 
 type Fondo = "oscuro" | "satelite";
 
-/** Mapa base y visibilidad de las parcelas (menú de capas). */
-function aplicarCapas(map: maplibregl.Map, fondo: Fondo, verParcelas: boolean) {
+/** Mapa base y visibilidad de las parcelas (menú de capas). `claro` = tema claro sin modo noche. */
+function aplicarCapas(map: maplibregl.Map, fondo: Fondo, verParcelas: boolean, claro: boolean) {
   if (!map.getLayer("parcelas-poligonos")) return;
-  map.setLayoutProperty("base", "visibility", fondo === "oscuro" ? "visible" : "none");
+  map.setLayoutProperty("base", "visibility", fondo === "oscuro" && !claro ? "visible" : "none");
+  map.setLayoutProperty("base-claro", "visibility", fondo === "oscuro" && claro ? "visible" : "none");
   map.setLayoutProperty("satelite", "visibility", fondo === "satelite" ? "visible" : "none");
   CAPAS_PARCELAS.forEach((id) => map.setLayoutProperty(id, "visibility", verParcelas ? "visible" : "none"));
 }
@@ -229,6 +256,7 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
   const [tip, setTip] = useState<Tip | null>(null);
   const [modoNoche, setModoNoche] = useState(false);
   const [fondo, setFondo] = useState<Fondo>("oscuro");
+  const [tema] = useTema();
   const [verParcelas, setVerParcelas] = useState(true);
   const [verEtiquetas, setVerEtiquetas] = useState(true);
   const [menuCapas, setMenuCapas] = useState(false);
@@ -244,8 +272,8 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
   // Las funciones del mapa viven en un efecto que solo corre al tener datos; leen las props actuales de aquí.
   const actual = useRef({ estado, parcela: parcelaSeleccionada, onEstado, onParcela });
   useEffect(() => { actual.current = { estado, parcela: parcelaSeleccionada, onEstado, onParcela }; });
-  const prefs = useRef({ modoNoche, fondo, verParcelas });
-  useEffect(() => { prefs.current = { modoNoche, fondo, verParcelas }; });
+  const prefs = useRef({ modoNoche, fondo, verParcelas, tema });
+  useEffect(() => { prefs.current = { modoNoche, fondo, verParcelas, tema }; });
   const encuadrar = useRef<((animar: boolean) => void) | null>(null);
   const centrarRegion = useRef<((animar: boolean) => void) | null>(null);
   const detenerGiro = useRef<(() => void) | null>(null);
@@ -330,7 +358,7 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
     map.on("load", () => {
       try { map.setProjection({ type: "globe" }); } catch (e) { console.warn(e); }
       try {
-        map.setSky(cielo(prefs.current.modoNoche));
+        map.setSky(cielo(prefs.current.modoNoche, prefs.current.tema === "light"));
       } catch (e) { console.warn("Sin atmósfera:", e); }
 
       const geojson = (d: unknown) => d as GeoJSONSourceSpecification["data"];
@@ -355,7 +383,7 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
         id: "estado-seleccion", type: "line", source: "estados", filter: ["==", ["get", "nombre"], ""],
         paint: { "line-color": AMBAR, "line-width": 2.5 },
       });
-      aplicarModoNoche(map, datos, prefs.current.modoNoche);
+      aplicarModoNoche(map, datos, prefs.current.modoNoche, prefs.current.tema);
       map.addLayer({
         id: "parcelas-poligonos", type: "fill", source: "poligonos", minzoom: 8,
         paint: { "fill-color": rampa("pred", ...datos.rangoPred), "fill-opacity": 0.85 },
@@ -380,7 +408,8 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
         id: "parcela-seleccion", type: "line", source: "poligonos", filter: ["==", ["get", "id"], ""],
         paint: { "line-color": AMBAR, "line-width": 3 },
       });
-      aplicarCapas(map, prefs.current.fondo, prefs.current.verParcelas);
+      aplicarCapas(map, prefs.current.fondo, prefs.current.verParcelas, prefs.current.tema === "light" && !prefs.current.modoNoche);
+      aplicarModoNoche(map, datos, prefs.current.modoNoche, prefs.current.tema);
 
       datos.etiquetas.forEach(({ nombre, lngLat, ancla }) => {
         const d = document.createElement("div");
@@ -465,18 +494,16 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
   // La cámara sigue a la ruta.
   useEffect(() => { encuadrar.current?.(true); }, [estado, parcelaSeleccionada]);
 
-  // Solo cambia la presentación del globo; no modifica capas, parcelas ni datos agrícolas.
+  // Solo cambia la presentación del globo (tema, modo noche, mapa base); no modifica parcelas ni datos agrícolas.
   useEffect(() => {
     try {
       if (!mapa.current || !datos) return;
-      mapa.current.setSky(cielo(modoNoche));
-      aplicarModoNoche(mapa.current, datos, modoNoche);
+      const claro = tema === "light" && !modoNoche;
+      mapa.current.setSky(cielo(modoNoche, claro));
+      aplicarModoNoche(mapa.current, datos, modoNoche, tema);
+      aplicarCapas(mapa.current, fondo, verParcelas, claro);
     } catch { /* el mapa aún no terminó de cargar */ }
-  }, [datos, modoNoche]);
-
-  useEffect(() => {
-    try { if (mapa.current) aplicarCapas(mapa.current, fondo, verParcelas); } catch { /* aún cargando */ }
-  }, [fondo, verParcelas]);
+  }, [datos, modoNoche, tema, fondo, verParcelas]);
 
   // Esc cierra el menú de capas.
   useEffect(() => {
@@ -520,7 +547,7 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
         <div className="map-capas" role="dialog" aria-label="Capas del mapa">
           <fieldset>
             <legend>Mapa base</legend>
-            <label><input type="radio" name="fondo" checked={fondo === "oscuro"} onChange={() => setFondo("oscuro")} /> Oscuro</label>
+            <label><input type="radio" name="fondo" checked={fondo === "oscuro"} onChange={() => setFondo("oscuro")} /> Mapa</label>
             <label><input type="radio" name="fondo" checked={fondo === "satelite"} onChange={() => setFondo("satelite")} /> Satélite</label>
           </fieldset>
           <fieldset>

@@ -4,7 +4,7 @@
  * Los percentiles frente al municipio solo se muestran con 10 o más parcelas (ver comparacion.ts).
  */
 import type { Parcela } from "../../data/tipos";
-import { Button, Label, Tooltip } from "../../components/ui";
+import { Button, Icon, Label, Tooltip } from "../../components/ui";
 import { fechaDeDiaDelAnio, num } from "../../lib/formato";
 import {
   clasificarForma, MIN_PARCELAS_PERCENTIL, percentilEnMunicipio,
@@ -24,8 +24,8 @@ export function EtiquetaConfianza({ parcela }: { parcela: Parcela }) {
 const dia = (d: number | null) => (d === null ? "—" : `Día ${num(d, 0)}`);
 const conFecha = (d: number | null, def: string) => (d === null ? def : `${def}. Día ${num(d, 0)} = ${fechaDeDiaDelAnio(Math.round(d))}`);
 
-export function TarjetaParcela({ parcela: p, delMunicipio, onDx, onSimulador }: {
-  parcela: Parcela; delMunicipio: Parcela[]; onDx: () => void; onSimulador: () => void;
+export function TarjetaParcela({ parcela: p, delMunicipio, onDx, onSimulador, onCerrar }: {
+  parcela: Parcela; delMunicipio: Parcela[]; onDx: () => void; onSimulador: () => void; onCerrar: () => void;
 }) {
   const n = delMunicipio.length;
   const hayPercentiles = n >= MIN_PARCELAS_PERCENTIL;
@@ -43,8 +43,16 @@ export function TarjetaParcela({ parcela: p, delMunicipio, onDx, onSimulador }: 
   ).filter(Boolean).join(" ");
 
   return (
-    <div className="parcel-card" aria-label={`Datos de la parcela ${p.id}`}>
-      <div className="card-head"><div><Label>SELECCIÓN ACTUAL</Label><div className="card-title">Datos de la parcela</div></div><EtiquetaConfianza parcela={p} /></div>
+      <div className="parcel-card" aria-label={`Datos de la parcela ${p.id}`}>
+      <div className="card-head">
+        <div><Label>SELECCIÓN ACTUAL</Label><div className="card-title">Datos de la parcela</div></div>
+        <div className="card-head-acciones">
+          <EtiquetaConfianza parcela={p} />
+          <button type="button" className="icon-button" onClick={onCerrar} aria-label="Cerrar la tarjeta de la parcela" title="Cerrar">
+            <Icon name="close" size={16} />
+          </button>
+        </div>
+      </div>
       <div className="parcel-id"><strong>{p.id}</strong><span>{p.conjunto === "ENTRENAMIENTO" ? "Entrenamiento (rendimiento conocido)" : "Predicción"}</span></div>
       <div className="meta-grid">
         <div><span>Estado</span><b>{p.estado}</b></div>
