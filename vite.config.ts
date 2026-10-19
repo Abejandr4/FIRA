@@ -7,5 +7,9 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   base: process.env.BASE_URL ?? "/",
   plugins: [react(), tailwindcss()],
-  server: { port: 5173 },
+  server: { port: 5173,
+    watch: {
+      ignored: ["**/asistente-proxy/**", "**/.wrangler/**"],
+    },
+  },
 });

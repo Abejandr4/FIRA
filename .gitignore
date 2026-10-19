@@ -10,3 +10,10 @@ __pycache__/
 !.vscode/extensions.json
 .idea
 *.log
+.env
+.env.*
+.env.local
+.env.local*
+.dev.vars
+.dev.vars*
+node_modules
