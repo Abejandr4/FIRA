@@ -109,7 +109,7 @@ function Contenido({ p, meta, onSimulador, onQueSi }: { p: Parcela; meta: MetaMo
             ? "Casi toda la estimación proviene de la ubicación; la corrección satelital es pequeña."
             : "En esta parcela la corrección satelital es mayor de lo habitual; sigue siendo secundaria frente a la ubicación."}
         </p>
-        <button type="button" className="link-button" onClick={onQueSi}>Explorar el modelo: ¿qué pasaría si…? <Icon name="chevron" size={14} /></button>
+        <button type="button" className="link-button" onClick={onQueSi}>Explorar la sensibilidad de la predicción<Icon name="chevron" size={14} /></button>
       </div>
 
       <div className="panel-section compact">

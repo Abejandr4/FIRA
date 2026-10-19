@@ -14,7 +14,7 @@ export function PanelDx({ parcela, delMunicipio, onCerrar }: { parcela: Parcela;
   const r = generarSenales(parcela, delMunicipio);
   return (
     <div className="dx-panel" role="dialog" aria-label={`Diagnóstico comparativo de ${parcela.id}`}>
-      <div className="drawer-head"><div><Label>{parcela.id}</Label><div className="card-title">Dx. comparativo</div></div>
+      <div className="drawer-head"><div><Label>{parcela.id}</Label><div className="card-title">Diagnóstico comparativo</div></div>
         <button type="button" className="icon-button" onClick={onCerrar} aria-label="Cerrar"><Icon name="close" /></button></div>
       <p>Señales frente a parcelas del mismo municipio</p>
       {r.tipo === "insuficiente" && (

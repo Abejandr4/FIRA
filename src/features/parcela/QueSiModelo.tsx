@@ -31,7 +31,7 @@ export function QueSiModelo({ parcela, onCerrar }: { parcela: Parcela; onCerrar:
   return (
     <div className="dx-panel quesi-panel" role="dialog" aria-label={`Explorar el modelo para ${parcela.id}`}>
       <div className="drawer-head">
-        <div><Label>{parcela.id} · MODELO DE RENDIMIENTO</Label><div className="card-title">¿Qué pasaría si…?</div></div>
+        <div><Label>{parcela.id} · MODELO DE RENDIMIENTO</Label><div className="card-title">Sensibilidad de la predicción</div></div>
         <button type="button" className="icon-button" onClick={onCerrar} aria-label="Cerrar"><Icon name="close" /></button>
       </div>
       {r.estado === "listo"

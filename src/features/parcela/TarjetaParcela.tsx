@@ -81,7 +81,7 @@ export function TarjetaParcela({ parcela: p, delMunicipio, onDx, onSimulador }: 
       </div>
 
       <Financiero parcela={p} />
-      <div className="card-actions"><Button onClick={onDx}>Dx. comparativo</Button><Button variant="primary" onClick={onSimulador}>Ver simulador (exploratorio)</Button></div>
+      <div className="card-actions"><Button onClick={onDx}>Diagnóstico</Button><Button variant="primary" onClick={onSimulador}>Ver simulador (exploratorio)</Button></div>
       <p className="caption center">Los valores del simulador no forman parte de la predicción.</p>
     </div>
   );
