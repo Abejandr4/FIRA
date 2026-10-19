@@ -55,11 +55,6 @@ export function VistaMapa({ ruta, navegar }: { ruta: Extract<Ruta, { vista: "map
             onParcela={(id) => navegar({ vista: "mapa", parcela: id })}
             onVolver={() => navegar({ vista: "mapa" })}
           />
-          <div className="map-controls">
-            <button type="button" aria-label="Acercar">+</button>
-            <button type="button" aria-label="Alejar">−</button>
-            <button type="button" aria-label="Capas"><Icon name="layers" size={17} /></button>
-          </div>
           <div className="map-legend">
             <Label>RENDIMIENTO ESTIMADO</Label>
             <div className="gradient-key" />
