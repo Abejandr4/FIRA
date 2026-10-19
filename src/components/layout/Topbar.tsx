@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import type { Ruta } from "../../app/ruta";
 import type { Parcela } from "../../data/tipos";
-import { Icon } from "../ui";
+import { Icon, ThemeToggle } from "../ui";
 import "./layout.css";
 
 export function Topbar({ ruta, navegar, parcelas }: {
@@ -13,18 +13,22 @@ export function Topbar({ ruta, navegar, parcelas }: {
   const estado = parcela?.estado ?? ruta.estado;
   return (
     <header className="topbar">
-      <div className="brand">
+      {/* La marca regresa a la página de inicio */}
+      <button type="button" className="brand brand--boton" onClick={() => navegar({ vista: "inicio" })} aria-label="Ir al inicio">
         <span className="brand-mark"><Icon name="leaf" size={19} /></span>
         <div><strong>AgroCebada</strong><small>FIRA · Reto 2026</small></div>
-      </div>
+      </button>
       <nav className="breadcrumbs" aria-label="Ruta">
-        <button type="button" onClick={() => navegar({ vista: "mapa" })}>Zona de estudio</button>
+        <button type="button" onClick={() => navegar({ vista: "inicio" })}>Inicio</button>
+        <Icon name="chevron" size={14} />
+        <button type="button" className={estado ? "" : "active"} onClick={() => navegar({ vista: "mapa" })}>Zona de estudio</button>
         {estado && <><Icon name="chevron" size={14} />
           <button type="button" className={parcela ? "" : "active"} onClick={() => navegar({ vista: "mapa", estado })}>{estado}</button></>}
         {parcela && <><Icon name="chevron" size={14} /><button type="button" className="active" aria-current="page">{parcela.id}</button></>}
       </nav>
       <Buscador ids={parcelas?.map((p) => p.id) ?? []} onEncontrada={(id) => navegar({ vista: "mapa", parcela: id })} />
       <div className="dataset-badge"><span /> Datos del reto <b>{parcelas ? `${parcelas.length} parcelas` : "…"}</b></div>
+      <ThemeToggle />
     </header>
   );
 }

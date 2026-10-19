@@ -18,6 +18,9 @@ npm install
 npm run dev            # http://localhost:5173
 ```
 
+npm install lucide-react
+npm install framer-motion
+
 Los datos ya vienen generados en `public/data/`, así que no hace falta Python para trabajar en la interfaz.
 
 ### Regenerar los datos
