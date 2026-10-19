@@ -38,6 +38,16 @@ const ESTILO: StyleSpecification = {
   ],
 };
 
+const cielo = (modoNoche: boolean) => modoNoche ? {
+  "sky-color": "#071326", "horizon-color": "#245b91", "fog-color": "#03070d",
+  "sky-horizon-blend": 0.7, "horizon-fog-blend": 0.55, "fog-ground-blend": 0.22,
+  "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 5, 1, 7, 0] as ExpressionSpecification,
+} : {
+  "sky-color": "#1b3a73", "horizon-color": "#7fb3d9", "fog-color": "#0b0e11",
+  "sky-horizon-blend": 0.6, "horizon-fog-blend": 0.5, "fog-ground-blend": 0.2,
+  "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 5, 1, 7, 0] as ExpressionSpecification,
+};
+
 // ---- Preparación de datos (se hace una vez por carga)
 type Caja = [[number, number], [number, number]];
 
@@ -108,6 +118,22 @@ const rampa = (prop: string, lo: number, hi: number): ExpressionSpecification =>
   ["interpolate", ["linear"], ["get", prop], lo, COLOR_BAJO, hi > lo ? hi : lo + 1e-6, COLOR_ALTO],
 ];
 
+function aplicarModoNoche(map: maplibregl.Map, datos: Datos, modoNoche: boolean) {
+  if (!map.getLayer("estados-relleno")) return;
+  const bajo = modoNoche ? "#063c2b" : COLOR_BAJO;
+  const alto = modoNoche ? "#52e29a" : COLOR_ALTO;
+  const sinDato = modoNoche ? "#164d3b" : COLOR_SIN_DATO;
+  const [lo, hi] = datos.rangoEstados;
+  map.setPaintProperty("base", "raster-opacity", modoNoche ? 0.28 : 1);
+  map.setPaintProperty("estados-relleno", "fill-color", [
+    "case", ["==", ["get", "media"], null], sinDato,
+    ["interpolate", ["linear"], ["get", "media"], lo, bajo, hi > lo ? hi : lo + 1e-6, alto],
+  ]);
+  map.setPaintProperty("estados-borde", "line-color", [
+    "case", ["boolean", ["feature-state", "hover"], false], AMBAR, modoNoche ? "#8dffd0" : "#9fb0b5",
+  ]);
+}
+
 // ---- Componente
 interface Props {
   estado?: string;
@@ -126,6 +152,8 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
   const geoParcelas = useParcelasGeo();
   const contenedor = useRef<HTMLDivElement>(null);
   const [tip, setTip] = useState<Tip | null>(null);
+  const [modoNoche, setModoNoche] = useState(false);
+  const mapa = useRef<maplibregl.Map | null>(null);
 
   // `.datos` es estable entre renders; el objeto Recurso no lo es (se crea de nuevo en cada render).
   const dEstados = geoEstados.datos, dParcelas = geoParcelas.datos;
@@ -147,6 +175,7 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
     const map = new maplibregl.Map({
       container: el, style: ESTILO, center: VISTA.center, zoom: VISTA.zoom, attributionControl: false, maxPitch: 60,
     });
+    mapa.current = map;
     map.on("error", (e) => console.error("MapLibre:", e.error?.message ?? e));
 
     let usuario = false;          // el usuario tocó el mapa: se detiene el giro hasta que regrese al nivel 0
@@ -193,11 +222,7 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
     map.on("load", () => {
       try { map.setProjection({ type: "globe" }); } catch (e) { console.warn(e); }
       try {
-        map.setSky({
-          "sky-color": "#1b3a73", "horizon-color": "#7fb3d9", "fog-color": "#0b0e11",
-          "sky-horizon-blend": 0.6, "horizon-fog-blend": 0.5, "fog-ground-blend": 0.2,
-          "atmosphere-blend": ["interpolate", ["linear"], ["zoom"], 0, 1, 5, 1, 7, 0],
-        });
+        map.setSky(cielo(modoNoche));
       } catch (e) { console.warn("Sin atmósfera:", e); }
 
       const geojson = (d: unknown) => d as GeoJSONSourceSpecification["data"];
@@ -222,6 +247,7 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
         id: "estado-seleccion", type: "line", source: "estados", filter: ["==", ["get", "nombre"], ""],
         paint: { "line-color": AMBAR, "line-width": 2.5 },
       });
+      aplicarModoNoche(map, datos, modoNoche);
       map.addLayer({
         id: "parcelas-poligonos", type: "fill", source: "poligonos", minzoom: 8,
         paint: { "fill-color": rampa("pred", ...datos.rangoPred), "fill-opacity": 0.85 },
@@ -315,6 +341,7 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
       marcadores.forEach((m) => m.remove());
       encuadrar.current = null;
       centrarRegion.current = null;
+      mapa.current = null;
       map.remove();
     };
   }, [datos]);
@@ -322,12 +349,22 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
   // La cámara sigue a la ruta.
   useEffect(() => { encuadrar.current?.(true); }, [estado, parcelaSeleccionada]);
 
+  // Solo cambia la presentación del globo; no modifica capas, parcelas ni datos agrícolas.
+  useEffect(() => {
+    try {
+      if (!mapa.current) return;
+      mapa.current.setSky(cielo(modoNoche));
+      aplicarModoNoche(mapa.current, datos!, modoNoche);
+    } catch { /* el mapa aún no terminó de cargar */ }
+  }, [datos, modoNoche]);
+
   const fallo = geoEstados.estado === "error" ? geoEstados : geoParcelas.estado === "error" ? geoParcelas : null;
   const cargando = !datos && !fallo;
 
   return (
-    <div className="globe-wrap">
+    <div className={`globe-wrap${modoNoche ? " is-night" : ""}`}>
       <div className="globe-space" />
+      {modoNoche && <div className="globe-night-lights" aria-hidden="true" />}
       <div ref={contenedor} className="globe-canvas" role="application" aria-label="Globo interactivo de la zona de estudio" />
       {tip && (
         <div className="globe-tooltip" style={{ left: tip.x + 14, top: tip.y + 14 }}>
@@ -344,6 +381,15 @@ export function MapaEstudio({ estado, parcelaSeleccionada, parcelas, onEstado, o
           </button>
         </div>
       )}
+      <button
+        type="button"
+        className="globe-night-toggle"
+        aria-pressed={modoNoche}
+        onClick={() => setModoNoche((activo) => !activo)}
+      >
+        {modoNoche ? "☀ Modo día" : "☾ Modo noche"}
+        <span>Solo visual</span>
+      </button>
       {cargando && <div className="globe-aviso">Cargando mapa…</div>}
       {fallo && (
         <div className="globe-aviso" role="alert">
