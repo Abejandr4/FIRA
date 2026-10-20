@@ -15,7 +15,7 @@ import { Encabezado } from "../comunes";
 import {
   colorRampa, correlacionesMunicipio, fenologia, grupoDe, histograma, porMunicipio, rmseMediaMunicipal, type Resumen,
 } from "../datos";
-import "./rueda.css";
+import "./Rueda.css";
 
 const C = 270;                    // centro del SVG
 const R_IN = 118, R_OUT = 222;    // anillo de sectores
